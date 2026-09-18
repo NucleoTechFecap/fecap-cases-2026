@@ -1,0 +1,78 @@
+.schedule-section{background:var(--paper)}
+
+.schedule-hero{position:relative;color:#fff;background:linear-gradient(105deg,#ff7d0a 0%,#f4560f 38%,#c02312 68%,#7d0606 100%)}
+.schedule-hero-content{display:flex;flex-direction:column;align-items:center;padding:200px 0 0;text-align:center}
+.schedule-hero-content .eyebrow{color:#fff;font-size:14px;letter-spacing:.14em}
+.schedule-hero-content h1{margin:26px 0 30px;color:var(--lime);font-size:clamp(38px,5vw,68px);line-height:.95;font-weight:900;letter-spacing:-.04em}
+.schedule-lead{max-width:1060px;margin:0 0 34px;font-size:clamp(15px,1.45vw,20px);line-height:1.45;color:rgba(255,255,255,.92)}
+
+.schedule-tabs{display:flex;justify-content:space-between;gap:8px;width:100%;overflow-x:auto;scrollbar-width:none}
+.schedule-tabs::-webkit-scrollbar{display:none}
+.schedule-tabs button{flex:0 0 auto;padding:22px clamp(14px,2.2vw,30px) 20px;border:0;border-radius:26px 26px 0 0;background:transparent;color:#fff;font:inherit;font-size:clamp(14px,1.4vw,20px);font-weight:900;white-space:nowrap;cursor:pointer;transition:background .25s,color .25s}
+.schedule-tabs button:hover{color:var(--lime)}
+.schedule-tabs button[aria-selected="true"]{background:var(--paper);color:var(--orange)}
+.schedule-tabs button:focus-visible{outline:3px solid var(--lime);outline-offset:-6px}
+
+.schedule-panel{display:grid;gap:24px;padding:80px 0 80px}
+
+.schedule-block{border-radius:12px;padding:24px}
+.schedule-block-header{display:flex;flex-wrap:wrap;align-items:center;gap:14px}
+.schedule-block-header h3{margin:0;font-size:20px;font-weight:900;letter-spacing:.06em;text-transform:uppercase}
+.schedule-time{display:inline-block;padding:7px 14px;border-radius:6px;font-size:16px;font-weight:900;white-space:nowrap}
+.schedule-tag{display:inline-block;padding:4px 12px;border:1.5px solid currentColor;border-radius:5px;font-size:15px;line-height:1.3}
+
+.schedule-workshops{display:grid;gap:16px;background:var(--blue);color:#fff}
+.schedule-workshops .schedule-time{background:#6f66ff;color:var(--lime)}
+.schedule-workshops .schedule-tag{color:rgba(255,255,255,.55)}
+.workshop-card{padding:24px;border-radius:10px;background:#6f66ff}
+.workshop-card-top{display:flex;align-items:center;gap:12px}
+.workshop-card-top strong{color:var(--lime);font-size:16px;letter-spacing:.14em;text-transform:uppercase}
+.workshop-card h4{margin:16px 0 10px;font-size:20px;font-weight:500}
+.workshop-card p{margin:0;color:rgba(255,255,255,.5);font-size:16px}
+
+.schedule-activation{background:var(--lime);color:#111}
+.schedule-activation .schedule-time{background:#fff}
+.schedule-activation .schedule-tag{color:var(--orange)}
+.schedule-activation p{margin:16px 0 0;font-size:20px}
+
+.schedule-talk{border:3px solid var(--orange);background:var(--paper);color:#111}
+.schedule-talk .schedule-time{padding:5px 12px;border:2px solid var(--orange);color:var(--orange)}
+.schedule-talk .schedule-tag{color:var(--blue)}
+.talk-speaker{display:flex;align-items:flex-start;gap:24px;margin-top:26px}
+.talk-avatar{flex:0 0 auto;display:grid;place-items:center;width:104px;height:104px;border-radius:50%;background:#d9d9d9;color:#777}
+.talk-speaker h4{margin:4px 0 10px;color:var(--orange);font-size:22px;font-weight:900}
+.talk-speaker p{margin:0}
+.talk-role{font-size:19px}
+.talk-bio{margin-top:14px!important;font-size:16px;line-height:1.45}
+.talk-moderator{margin:22px 0 0;padding-top:20px;border-top:1.5px solid #555;font-size:16px}
+.talk-moderator strong{margin:0 4px;color:var(--orange)}
+
+.schedule-break{display:flex;align-items:center;gap:18px;padding:4px 0;border-radius:0;color:#111}
+.schedule-break .schedule-time{padding:5px 14px;border:2px solid #111}
+.schedule-break strong{font-size:16px;letter-spacing:.16em;text-transform:uppercase}
+.schedule-break-line{flex:1;border-top:1.5px dotted #333}
+.schedule-break .schedule-time+.schedule-break-line{flex:2}
+
+@media(max-width:720px){
+  .schedule-hero-content{padding-top:130px}
+  .schedule-hero-content h1{margin:18px 0 20px}
+  .schedule-tabs{justify-content:flex-start;overflow-x:auto;scrollbar-width:none;margin:0 -15px;padding:0 15px;width:calc(100% + 30px)}
+  .schedule-tabs::-webkit-scrollbar{display:none}
+  .schedule-tabs button{padding:16px 18px 14px;border-radius:18px 18px 0 0}
+  .schedule-panel{gap:16px;padding:40px 0 56px}
+  .schedule-block{padding:16px}
+  .schedule-block-header{gap:10px}
+  .schedule-block-header h3{font-size:16px}
+  .schedule-time{font-size:13px;padding:6px 10px}
+  .schedule-tag{font-size:12px;padding:3px 8px}
+  .workshop-card{padding:16px}
+  .workshop-card h4{font-size:17px}
+  .workshop-card p,.talk-bio,.talk-moderator{font-size:14px}
+  .schedule-activation p{font-size:16px}
+  .talk-speaker{gap:14px;margin-top:18px}
+  .talk-avatar{width:64px;height:64px}
+  .talk-speaker h4{font-size:18px}
+  .talk-role{font-size:15px}
+  .schedule-break{gap:10px}
+  .schedule-break strong{font-size:12px}
+}
