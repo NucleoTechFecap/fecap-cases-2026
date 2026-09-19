@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { type ActionResult, type Guard, audit, fail, guard } from "@/lib/admin/guard";
 import { type RichDoc, extractText, imagesMissingAlt, readingMinutes, sanitizeDoc } from "@/lib/blog/content";
 import { DETAIL_SELECT, toCategory, toPostDetail, toTag } from "@/lib/blog/mappers";
@@ -54,7 +54,8 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const UNIQUE_VIOLATION = "23505";
 
 function refreshBlog(...slugs: (string | null | undefined)[]) {
-  revalidateTag(BLOG_CACHE_TAG);
+  // updateTag (Next 16): expira o cache na hora — quem publica já vê o resultado na próxima leitura.
+  updateTag(BLOG_CACHE_TAG);
   revalidatePath("/blog");
   revalidatePath("/sitemap.xml");
   for (const slug of new Set(slugs)) if (slug) revalidatePath(`/blog/${slug}`);

@@ -13,7 +13,7 @@ export async function createSessionClient() {
         try {
           cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
         } catch {
-          // Em Server Components os cookies são somente leitura; o middleware renova a sessão.
+          // Em Server Components os cookies são somente leitura; o proxy (proxy.ts) renova a sessão.
         }
       },
     },

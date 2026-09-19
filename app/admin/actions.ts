@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { type ActionResult, audit, fail, guard } from "@/lib/admin/guard";
 import { getAdminSession } from "@/lib/landing/auth";
@@ -51,7 +51,8 @@ function validateConfig(input: unknown): { config: LandingConfig } | { error: st
 }
 
 function refreshPublicSite() {
-  revalidateTag(LANDING_CACHE_TAG);
+  // updateTag (Next 16): expira o cache na hora — quem publica já vê o resultado na próxima leitura.
+  updateTag(LANDING_CACHE_TAG);
   revalidatePath("/", "layout");
 }
 
@@ -114,7 +115,7 @@ export async function loadEditorData(): Promise<ActionResult<EditorData>> {
     });
     if (init.error) return fail("Não foi possível inicializar a landing page.");
 
-    // Sem revalidar aqui: esta função roda durante o render da página (o Next proíbe revalidateTag
+    // Sem revalidar aqui: esta função roda durante o render da página (o Next proíbe updateTag
     // nesse momento) e a versão 1 é idêntica ao conteúdo padrão que o site já exibe.
     ({ data: page, error } = await query(2));
     if (error || !page) return fail("Não foi possível carregar a landing page.");
