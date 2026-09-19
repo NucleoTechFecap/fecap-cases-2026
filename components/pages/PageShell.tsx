@@ -8,16 +8,18 @@ import { getPublishedLanding } from "@/lib/landing/queries";
 
 type PageShellProps = {
   activeHref?: string;
-  eyebrow: string;
+  eyebrow: React.ReactNode;
   title: string;
-  lead: string;
+  lead?: string;
+  /** Conteúdo acima do eyebrow (ex.: breadcrumb do Blog). */
+  heroTop?: React.ReactNode;
   heroActions?: React.ReactNode;
   showCta?: boolean;
   children: React.ReactNode;
 };
 
 // Header, faixa, cores e footer das páginas internas seguem o que foi publicado no painel.
-export async function PageShell({ activeHref = "", eyebrow, title, lead, heroActions, showCta = true, children }: PageShellProps) {
+export async function PageShell({ activeHref = "", eyebrow, title, lead, heroTop, heroActions, showCta = true, children }: PageShellProps) {
   const { config } = await getPublishedLanding();
   const marquee = findSection(config, "marquee");
 
@@ -35,9 +37,10 @@ export async function PageShell({ activeHref = "", eyebrow, title, lead, heroAct
         <span className="page-hero-shape page-hero-shape-b" aria-hidden="true" />
 
         <div className="page-hero-content shell">
+          {heroTop}
           <p className="eyebrow">{eyebrow}</p>
           <h1>{title}</h1>
-          <p className="page-hero-lead">{lead}</p>
+          {lead && <p className="page-hero-lead">{lead}</p>}
           {heroActions && <div className="page-hero-actions">{heroActions}</div>}
         </div>
       </section>

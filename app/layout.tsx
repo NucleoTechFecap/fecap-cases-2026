@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Archivo, Inter, Poppins, Space_Grotesk } from "next/font/google";
+import { PageTransition } from "@/components/PageTransition";
+import { FECAP_CASES_KEYWORDS } from "@/data/seo";
 import "./globals.css";
 import "./pages.css";
 import "./cms.css";
@@ -18,10 +20,17 @@ const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space
 
 const archivo = Archivo({ subsets: ["latin"], axes: ["wdth"], variable: "--font-wide", display: "swap" });
 
+// Necessário para URLs absolutas de canonical, Open Graph e Twitter em todas as rotas.
+const siteOrigin = process.env.NEXT_PUBLIC_SITE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteOrigin),
   title: "FECAP Cases 2026",
   description:
     "Landing page do FECAP Cases — conteúdo, experiências, conexões e cases que transformam.",
+  keywords: [...FECAP_CASES_KEYWORDS],
+  openGraph: { locale: "pt_BR", siteName: "FECAP Cases" },
+  twitter: { card: "summary_large_image" },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -31,7 +40,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <noscript>
           <style>{".site-header,.hero-content>*,.schedule-hero-content>*,.page-hero-content>*{visibility:visible!important}"}</style>
         </noscript>
-        {children}
+        <PageTransition>{children}</PageTransition>
       </body>
     </html>
   );

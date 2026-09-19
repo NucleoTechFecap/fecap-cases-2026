@@ -1,0 +1,705 @@
+/* =====================================================================
+   Painel — Blog. Complementa admin.css (mesmos tokens --adm-*).
+   ===================================================================== */
+
+.adm-sidebar nav > div + div {
+  margin-top: 18px;
+}
+
+.adm-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Páginas com rolagem própria (o shell do painel nunca rola) */
+.adm-page {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.adm-card {
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid var(--adm-line);
+  border-radius: var(--adm-radius);
+  background: var(--adm-surface);
+}
+
+.adm-card > * + * {
+  margin-top: 14px;
+}
+
+.adm-linklike {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--adm-muted);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.adm-linklike:hover {
+  color: var(--adm-primary);
+}
+
+.adm-linklike:focus-visible,
+.adm-metrics button:focus-visible,
+.adm-table a:focus-visible,
+.adm-chips button:focus-visible,
+.adm-rte-btn:focus-visible,
+.adm-rte-select:focus-visible {
+  outline: 2px solid var(--adm-primary);
+  outline-offset: 2px;
+}
+
+.adm-status-text[data-error="true"] {
+  color: var(--adm-danger);
+  font-weight: 600;
+}
+
+.adm-dialog-form {
+  display: grid;
+  gap: 4px;
+  margin-top: 12px;
+}
+
+.adm-dialog-remove {
+  margin-right: auto;
+}
+
+/* ---------- Métricas ---------- */
+.adm-metrics {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.adm-metrics button {
+  width: 100%;
+  display: grid;
+  gap: 2px;
+  padding: 14px 16px;
+  border: 1px solid var(--adm-line);
+  border-radius: var(--adm-radius);
+  background: var(--adm-surface);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.adm-metrics button:hover {
+  border-color: var(--adm-navy);
+}
+
+.adm-metrics button[aria-pressed="true"] {
+  border-color: var(--adm-primary);
+  box-shadow: inset 0 0 0 1px var(--adm-primary);
+}
+
+.adm-metrics strong {
+  font-size: 26px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.adm-metrics span {
+  font-size: 12.5px;
+  color: var(--adm-muted);
+}
+
+/* ---------- Filtros ---------- */
+.adm-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.adm-filters .adm-input {
+  width: auto;
+  min-width: 0;
+  flex: 0 1 170px;
+}
+
+.adm-filters .adm-filters-search {
+  flex: 1 1 240px;
+}
+
+.adm-filters-date {
+  display: grid;
+  gap: 2px;
+  flex: 0 1 150px;
+  font-size: 11.5px;
+  color: var(--adm-muted);
+}
+
+.adm-filters-date .adm-input {
+  width: 100%;
+}
+
+/* ---------- Tabela ---------- */
+.adm-blog-results[data-loading="true"] {
+  opacity: 0.55;
+  transition: opacity 0.2s;
+}
+
+.adm-table-wrap {
+  overflow-x: auto;
+}
+
+.adm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+.adm-table th,
+.adm-table td {
+  padding: 11px 10px;
+  border-bottom: 1px solid var(--adm-line);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.adm-table thead th {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--adm-muted);
+  white-space: nowrap;
+}
+
+.adm-table tbody th {
+  min-width: 220px;
+  font-weight: 600;
+}
+
+.adm-table tbody th a:hover {
+  color: var(--adm-primary);
+  text-decoration: underline;
+}
+
+.adm-table tbody th small {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--adm-muted);
+  overflow-wrap: anywhere;
+}
+
+.adm-table tbody th .adm-badge {
+  margin-left: 8px;
+}
+
+.adm-table tr[data-busy="true"] {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.adm-table-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+  min-width: 250px;
+}
+
+.adm-blog-category {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.adm-blog-category i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--adm-muted);
+}
+
+.adm-blog-status[data-status="draft"] {
+  background: #e8ebf3;
+  color: #414b63;
+}
+
+.adm-blog-status[data-status="published"] {
+  background: #dcf5e7;
+  color: var(--adm-ok);
+}
+
+.adm-blog-status[data-status="scheduled"] {
+  background: #e4e1ff;
+  color: #2a1fb8;
+}
+
+.adm-blog-status[data-status="archived"] {
+  background: var(--adm-warn-bg);
+  color: var(--adm-warn-ink);
+}
+
+.adm-empty-state {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 44px 16px;
+  text-align: center;
+}
+
+.adm-empty-state strong {
+  font-size: 16px;
+}
+
+.adm-empty-state p {
+  margin: 0 0 8px;
+  color: var(--adm-muted);
+}
+
+.adm-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12.5px;
+  color: var(--adm-muted);
+}
+
+/* ---------- Editor de publicação ---------- */
+.adm-blog-fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.adm-blog-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  align-items: start;
+  gap: 16px;
+}
+
+.adm-blog-main {
+  min-width: 0;
+  display: grid;
+  gap: 16px;
+}
+
+.adm-blog-side {
+  min-width: 0;
+}
+
+.adm-blog-title.adm-input {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.adm-blog-slug {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.adm-blog-slug > span {
+  color: var(--adm-muted);
+  font-size: 13px;
+}
+
+.adm-blog-slug .adm-input {
+  flex: 1 1 200px;
+  width: auto;
+  min-width: 0;
+}
+
+.adm-blog-content-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.adm-blog-content-head small,
+.adm-blog-hint {
+  font-size: 12px;
+  color: var(--adm-muted);
+}
+
+.adm-blog-statusline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+/* Listas (fontes, links): URLs longas no resumo do item não podem alargar a página no celular */
+.adm-blog-main .adm-sortable,
+.adm-blog-main .adm-sortable-item {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.adm-blog-main .adm-item > summary > span {
+  flex: 0 1 auto;
+}
+
+.adm-blog-main .adm-item > summary > em {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  color: var(--adm-muted);
+}
+
+.adm-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.adm-chips li {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 4px 3px 10px;
+  border-radius: 999px;
+  background: #e8ebf3;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.adm-chips button {
+  width: 20px;
+  height: 20px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--adm-muted);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.adm-chips button:hover:not(:disabled) {
+  background: var(--adm-danger);
+  color: #fff;
+}
+
+.adm-seo-google {
+  display: grid;
+  gap: 2px;
+  margin: 6px 0 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--adm-line);
+  border-radius: var(--adm-radius);
+  background: #fff;
+  overflow-wrap: anywhere;
+}
+
+.adm-seo-google small {
+  font-size: 12px;
+  color: #4d5156;
+}
+
+.adm-seo-google strong {
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: #1a0dab;
+}
+
+.adm-seo-google p {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  font-size: 13px;
+  color: #4d5156;
+}
+
+/* ---------- Rich text ---------- */
+.adm-rte {
+  border: 1px solid var(--adm-line);
+  border-radius: var(--adm-radius);
+  background: #fff;
+}
+
+.adm-rte-loading {
+  padding: 40px 16px;
+  color: var(--adm-muted);
+  text-align: center;
+}
+
+.adm-rte:focus-within {
+  border-color: var(--adm-navy);
+}
+
+.adm-rte-toolbar {
+  position: sticky;
+  top: -20px;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 0;
+  padding: 6px;
+  border-bottom: 1px solid var(--adm-line);
+  border-radius: var(--adm-radius) var(--adm-radius) 0 0;
+  background: var(--adm-surface-2);
+}
+
+.adm-rte-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 6px;
+  border-right: 1px solid var(--adm-line);
+}
+
+.adm-rte-group:last-child {
+  border-right: 0;
+}
+
+.adm-rte-btn {
+  min-width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0 7px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--adm-ink);
+  font: inherit;
+  font-size: 13px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.adm-rte-btn:hover:not(:disabled) {
+  background: #e3e7f0;
+}
+
+.adm-rte-btn[aria-pressed="true"] {
+  background: var(--adm-navy);
+  color: #fff;
+}
+
+.adm-rte-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.adm-rte-btn mark {
+  padding: 0 4px;
+  border-radius: 3px;
+  background: #c8ff00;
+}
+
+.adm-rte-text {
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.adm-rte-select {
+  height: 32px;
+  max-width: 132px;
+  padding: 0 6px;
+  border: 1px solid var(--adm-line);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--adm-ink);
+  font: inherit;
+  font-size: 12.5px;
+}
+
+/* Área editável: herda o visual do artigo público (.article-content, em app/blog/blog.css) */
+.adm-rte .adm-rte-content {
+  min-height: 420px;
+  padding: 22px clamp(14px, 3vw, 32px);
+  color: #062f68;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 17px;
+  outline: none;
+}
+
+.adm-rte .adm-rte-content > p:first-child:last-child:has(> br.ProseMirror-trailingBreak:only-child)::before {
+  content: "Comece a escrever a publicação…";
+  float: left;
+  height: 0;
+  color: #9aa3b8;
+  pointer-events: none;
+}
+
+.adm-rte .article-figure[data-align="full"] {
+  width: 100%;
+  margin-left: 0;
+  transform: none;
+}
+
+.adm-rte .article-figure,
+.adm-rte .article-cta {
+  cursor: pointer;
+}
+
+.adm-rte .article-figure figcaption {
+  display: block;
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--adm-muted);
+}
+
+.adm-rte .ProseMirror-selectednode {
+  outline: 3px solid var(--adm-primary);
+  outline-offset: 3px;
+  border-radius: 10px;
+}
+
+.adm-rte[data-readonly="true"] .adm-rte-content {
+  background: var(--adm-surface-2);
+}
+
+@media (max-width: 1180px) {
+  .adm-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .adm-blog-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 1023px) {
+  /* Com o Blog o menu cresceu: no celular vira uma única linha rolável abaixo da marca. */
+  .adm-sidebar nav {
+    order: 3;
+    flex: 1 1 100%;
+    display: flex;
+    gap: 2px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .adm-sidebar nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .adm-sidebar-brand {
+    margin-right: auto;
+  }
+
+  .adm-sidebar nav > div {
+    display: contents;
+  }
+
+  .adm-page {
+    padding: 14px;
+  }
+
+  .adm-rte-toolbar {
+    top: -14px;
+  }
+}
+
+@media (max-width: 720px) {
+  .adm-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .adm-filters .adm-input,
+  .adm-filters-date {
+    flex: 1 1 140px;
+  }
+
+  /* Tabela vira lista de cards: nada de rolagem horizontal no celular */
+  .adm-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  .adm-table,
+  .adm-table tbody,
+  .adm-table tr,
+  .adm-table th,
+  .adm-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .adm-table tr {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--adm-line);
+  }
+
+  .adm-table th,
+  .adm-table td {
+    padding: 3px 0;
+    border: 0;
+  }
+
+  .adm-table tbody th {
+    min-width: 0;
+    font-size: 15px;
+  }
+
+  .adm-table td[data-label]::before {
+    content: attr(data-label) ": ";
+    color: var(--adm-muted);
+    font-size: 12px;
+  }
+
+  .adm-table-actions {
+    justify-content: flex-start;
+    min-width: 0;
+    margin-top: 8px;
+  }
+
+  .adm-rte-text {
+    display: none;
+  }
+
+  .adm-rte-group {
+    padding: 0 4px;
+  }
+
+  .adm-rte-select {
+    max-width: 104px;
+  }
+
+  .adm-rte .adm-rte-content {
+    min-height: 320px;
+  }
+}

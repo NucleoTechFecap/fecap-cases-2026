@@ -315,73 +315,76 @@ export function LandingEditor({ initial, canEdit, canPublish }: LandingEditorPro
               ))}
             </nav>
 
-            <fieldset className="adm-panel-body" disabled={locked && tab !== "history" && tab !== "media"}>
-              {tab === "content" && target === null && (
-                <>
-                  <p className="adm-intro">Escolha uma seção para editar. Arraste para mudar a ordem e use a chave para mostrar ou ocultar.</p>
-                  <LandingSidebar config={config} onEdit={setTarget} onSectionsChange={(sections) => setConfig((current) => ({ ...current, sections }))} />
-                </>
-              )}
+            {/* A rolagem fica no div: <fieldset> com overflow vaza a altura para a página no Chrome. */}
+            <div className="adm-panel-body">
+              <fieldset className="adm-panel-fields" disabled={locked && tab !== "history" && tab !== "media"}>
+                {tab === "content" && target === null && (
+                  <>
+                    <p className="adm-intro">Escolha uma seção para editar. Arraste para mudar a ordem e use a chave para mostrar ou ocultar.</p>
+                    <LandingSidebar config={config} onEdit={setTarget} onSectionsChange={(sections) => setConfig((current) => ({ ...current, sections }))} />
+                  </>
+                )}
 
-              {tab === "content" && target !== null && (
-                <>
-                  <div className="adm-breadcrumb">
-                    <button type="button" className="adm-btn adm-btn-small" onClick={() => setTarget(null)}>
-                      ← Todas as seções
-                    </button>
-                    <h2>{target === "header" ? "Header" : target === "footer" ? "Footer" : activeSection ? sectionLabel(activeSection, config.sections) : ""}</h2>
+                {tab === "content" && target !== null && (
+                  <>
+                    <div className="adm-breadcrumb">
+                      <button type="button" className="adm-btn adm-btn-small" onClick={() => setTarget(null)}>
+                        ← Todas as seções
+                      </button>
+                      <h2>{target === "header" ? "Header" : target === "footer" ? "Footer" : activeSection ? sectionLabel(activeSection, config.sections) : ""}</h2>
+                      {activeSection && (
+                        <button type="button" className="adm-btn adm-btn-small" onClick={() => handleResetSection(activeSection)}>
+                          Restaurar padrão
+                        </button>
+                      )}
+                    </div>
+
+                    {target === "header" && <HeaderEditor value={config.header} onChange={(header) => setConfig((current) => ({ ...current, header }))} />}
+                    {target === "footer" && <FooterEditor value={config.footer} onChange={(footer) => setConfig((current) => ({ ...current, footer }))} />}
                     {activeSection && (
-                      <button type="button" className="adm-btn adm-btn-small" onClick={() => handleResetSection(activeSection)}>
-                        Restaurar padrão
-                      </button>
+                      <>
+                        <Toggle label="Seção visível no site" checked={activeSection.enabled} onChange={(enabled) => updateSection({ ...activeSection, enabled })} />
+                        <SectionEditor section={activeSection} onChange={updateSection} />
+                      </>
                     )}
-                  </div>
+                  </>
+                )}
 
-                  {target === "header" && <HeaderEditor value={config.header} onChange={(header) => setConfig((current) => ({ ...current, header }))} />}
-                  {target === "footer" && <FooterEditor value={config.footer} onChange={(footer) => setConfig((current) => ({ ...current, footer }))} />}
-                  {activeSection && (
-                    <>
-                      <Toggle label="Seção visível no site" checked={activeSection.enabled} onChange={(enabled) => updateSection({ ...activeSection, enabled })} />
-                      <SectionEditor section={activeSection} onChange={updateSection} />
-                    </>
-                  )}
-                </>
-              )}
-
-              {tab === "design" && <DesignEditor value={config.design} onChange={(design) => setConfig((current) => ({ ...current, design }))} />}
-              {tab === "seo" && <SeoEditor value={config.seo} siteName={config.event.name} onChange={(seo) => setConfig((current) => ({ ...current, seo }))} />}
-              {tab === "media" && (
-                <Group title="Biblioteca de mídia" description="Imagens enviadas pelo painel. As que estão em uso na landing não podem ser excluídas.">
-                  <MediaLibrary canEdit={canEdit} />
-                </Group>
-              )}
-              {tab === "history" && (
-                <Group title="Histórico de versões" description="Cada publicação gera uma versão. Restaurar cria uma nova versão — nada é apagado.">
-                  <VersionHistory refreshKey={refreshKey} viewingId={viewing?.id ?? null} busy={busy !== "idle"} onView={handleViewVersion} onRestore={handleRestore} />
-                </Group>
-              )}
-              {tab === "settings" && (
-                <>
-                  <SettingsEditor
-                    event={config.event}
-                    social={config.social}
-                    onEventChange={(event) => setConfig((current) => ({ ...current, event }))}
-                    onSocialChange={(social) => setConfig((current) => ({ ...current, social }))}
-                  />
-                  <Group title="Salvamento">
-                    <Toggle label="Salvar rascunho automaticamente" hint="Nunca publica sozinho: só o rascunho é gravado." checked={autosave} onChange={setAutosave} />
+                {tab === "design" && <DesignEditor value={config.design} onChange={(design) => setConfig((current) => ({ ...current, design }))} />}
+                {tab === "seo" && <SeoEditor value={config.seo} siteName={config.event.name} onChange={(seo) => setConfig((current) => ({ ...current, seo }))} />}
+                {tab === "media" && (
+                  <Group title="Biblioteca de mídia" description="Imagens enviadas pelo painel. As que estão em uso na landing não podem ser excluídas.">
+                    <MediaLibrary canEdit={canEdit} />
                   </Group>
-                  <ActivityPanel refreshKey={refreshKey} />
-                  {canEdit && (
-                    <Group title="Zona de risco">
-                      <button type="button" className="adm-btn adm-btn-danger" onClick={handleResetAll}>
-                        Restaurar toda a landing ao padrão
-                      </button>
+                )}
+                {tab === "history" && (
+                  <Group title="Histórico de versões" description="Cada publicação gera uma versão. Restaurar cria uma nova versão — nada é apagado.">
+                    <VersionHistory refreshKey={refreshKey} viewingId={viewing?.id ?? null} busy={busy !== "idle"} onView={handleViewVersion} onRestore={handleRestore} />
+                  </Group>
+                )}
+                {tab === "settings" && (
+                  <>
+                    <SettingsEditor
+                      event={config.event}
+                      social={config.social}
+                      onEventChange={(event) => setConfig((current) => ({ ...current, event }))}
+                      onSocialChange={(social) => setConfig((current) => ({ ...current, social }))}
+                    />
+                    <Group title="Salvamento">
+                      <Toggle label="Salvar rascunho automaticamente" hint="Nunca publica sozinho: só o rascunho é gravado." checked={autosave} onChange={setAutosave} />
                     </Group>
-                  )}
-                </>
-              )}
-            </fieldset>
+                    <ActivityPanel refreshKey={refreshKey} />
+                    {canEdit && (
+                      <Group title="Zona de risco">
+                        <button type="button" className="adm-btn adm-btn-danger" onClick={handleResetAll}>
+                          Restaurar toda a landing ao padrão
+                        </button>
+                      </Group>
+                    )}
+                  </>
+                )}
+              </fieldset>
+            </div>
           </section>
 
           <section className="adm-preview-pane" aria-label="Preview">

@@ -9,6 +9,7 @@ import {
   SOCIAL_LINKS,
   SPONSOR_GROUPS,
 } from "@/data/fecapCases";
+import { FECAP_CASES_KEYWORDS } from "@/data/seo";
 import type { CmsButton, LandingConfig, SectionStyles, SectionType } from "@/lib/landing/schema";
 
 // Configuração padrão = conteúdo que já estava hardcoded na landing.
@@ -64,7 +65,7 @@ export const DEFAULT_LANDING_CONFIG: LandingConfig = {
   seo: {
     title: "FECAP Cases 2026",
     description: "Landing page do FECAP Cases — conteúdo, experiências, conexões e cases que transformam.",
-    keywords: "FECAP Cases, Direções, comunicação, publicidade, workshops, palestras",
+    keywords: FECAP_CASES_KEYWORDS.join(", "),
     canonicalUrl: "",
     ogTitle: "",
     ogDescription: "",

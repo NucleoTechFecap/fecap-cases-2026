@@ -2,15 +2,14 @@
 
 import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
-import { type AdminSession, getAdminSession } from "@/lib/landing/auth";
+import { type ActionResult, audit, fail, guard } from "@/lib/admin/guard";
+import { getAdminSession } from "@/lib/landing/auth";
 import { DEFAULT_LANDING_CONFIG } from "@/lib/landing/defaults";
 import { describeIssues, parseLandingConfig } from "@/lib/landing/parse";
 import { type LandingConfig, landingConfigSchema } from "@/lib/landing/schema";
 import { sanitizeSvg } from "@/lib/landing/svg";
 import { ASSETS_BUCKET, LANDING_CACHE_TAG, LANDING_SLUG, isSupabaseConfigured } from "@/lib/supabase/env";
 import { createSessionClient } from "@/lib/supabase/server";
-
-export type ActionResult<T = undefined> = { ok: true; data: T } | { ok: false; error: string };
 
 export type EditorData = {
   draft: LandingConfig;
@@ -44,41 +43,6 @@ export type MediaAsset = {
 
 export type AuditEntry = { id: number; action: string; entityType: string; metadata: Record<string, unknown>; createdAt: string };
 export type ContactMessage = { id: string; name: string; email: string; message: string; createdAt: string };
-
-const fail = (error: string): { ok: false; error: string } => ({ ok: false, error });
-
-type Guard = { session: AdminSession; supabase: Awaited<ReturnType<typeof createSessionClient>> };
-
-/**
- * Toda action revalida sessão e role no servidor. Mesmo que alguém burle esta checagem,
- * o RLS do banco/Storage bloqueia a escrita — as duas camadas são independentes.
- */
-async function guard(level: "view" | "edit" | "publish"): Promise<Guard | string> {
-  if (!isSupabaseConfigured) return "O Supabase ainda não foi configurado neste ambiente.";
-
-  const session = await getAdminSession();
-  if (!session) return "Sua sessão expirou. Entre novamente.";
-
-  const allowed =
-    level === "publish" ? session.canPublish : level === "edit" ? session.canEdit : session.role !== "user";
-  if (!allowed) return "Você não tem permissão para realizar esta ação.";
-
-  return { session, supabase: await createSessionClient() };
-}
-
-async function audit(
-  { session, supabase }: Guard,
-  action: string,
-  entityType: string,
-  entityId: string | null,
-  metadata: Record<string, string | number | boolean | null> = {},
-) {
-  // Nunca registrar senhas, tokens ou o conteúdo de mensagens: só o "quem, o quê, quando".
-  const { error } = await supabase
-    .from("landing_audit_logs")
-    .insert({ user_id: session.userId, action, entity_type: entityType, entity_id: entityId, metadata });
-  if (error) console.error("[admin] Falha ao registrar auditoria:", error.message);
-}
 
 function validateConfig(input: unknown): { config: LandingConfig } | { error: string } {
   const parsed = landingConfigSchema.safeParse(input);
@@ -126,11 +90,14 @@ export async function loadEditorData(): Promise<ActionResult<EditorData>> {
   const ctx = await guard("view");
   if (typeof ctx === "string") return fail(ctx);
 
-  const query = () =>
+  // `attempt` muda a URL da consulta: durante o render o React memoiza GETs idênticos, e a
+  // releitura após a inicialização receberia de novo o "não encontrado" da primeira tentativa.
+  const query = (attempt: 1 | 2 = 1) =>
     ctx.supabase
       .from("landing_pages")
       .select("draft_content, draft_updated_at, published_at, published_version_id")
       .eq("slug", LANDING_SLUG)
+      .limit(attempt)
       .maybeSingle();
 
   let { data: page, error } = await query();
@@ -147,8 +114,9 @@ export async function loadEditorData(): Promise<ActionResult<EditorData>> {
     });
     if (init.error) return fail("Não foi possível inicializar a landing page.");
 
-    refreshPublicSite();
-    ({ data: page, error } = await query());
+    // Sem revalidar aqui: esta função roda durante o render da página (o Next proíbe revalidateTag
+    // nesse momento) e a versão 1 é idêntica ao conteúdo padrão que o site já exibe.
+    ({ data: page, error } = await query(2));
     if (error || !page) return fail("Não foi possível carregar a landing page.");
   }
 
@@ -276,7 +244,9 @@ export async function restoreVersion(versionId: string): Promise<ActionResult<{ 
 
 // ---------- Mídia ----------
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
-const FOLDERS = ["hero", "sponsors", "partners", "gallery", "footer", "og", "miscellaneous"] as const;
+const FOLDERS = ["hero", "sponsors", "partners", "gallery", "footer", "og", "miscellaneous", "blog-covers", "blog-content"] as const;
+// A biblioteca é única; só o caminho no bucket separa os arquivos do Blog dos da landing.
+const FOLDER_PATHS: Record<string, string> = { "blog-covers": "blog/covers", "blog-content": "blog/content" };
 const MIME_BY_EXTENSION: Record<string, string> = {
   jpg: "image/jpeg",
   jpeg: "image/jpeg",
@@ -341,7 +311,7 @@ export async function uploadAsset(formData: FormData): Promise<ActionResult<Medi
       .replace(/^-+|-+$/g, "")
       .toLowerCase()
       .slice(0, 60) || "imagem";
-  const path = `landing/${folder}/${Date.now()}-${crypto.randomUUID().slice(0, 8)}-${baseName}.${extension}`;
+  const path = `${FOLDER_PATHS[folder] ?? `landing/${folder}`}/${Date.now()}-${crypto.randomUUID().slice(0, 8)}-${baseName}.${extension}`;
 
   const upload = await ctx.supabase.storage.from(ASSETS_BUCKET).upload(path, body, { contentType: mime, cacheControl: "31536000" });
   if (upload.error) return fail("Não foi possível enviar a imagem.");
@@ -405,6 +375,11 @@ export async function deleteAsset(id: string): Promise<ActionResult<{ id: string
     inUse = JSON.stringify(version?.content ?? {}).includes(asset.url);
   }
   if (inUse) return fail("Esta imagem está em uso na landing page. Troque-a na seção correspondente antes de excluir.");
+
+  const blogUsage = await ctx.supabase.rpc("blog_asset_in_use", { p_url: asset.url });
+  // PGRST202 = função inexistente (migration do Blog ainda não aplicada): não há publicações para conferir.
+  if (blogUsage.error && blogUsage.error.code !== "PGRST202") return fail("Não foi possível verificar se a imagem está em uso no Blog.");
+  if (blogUsage.data) return fail("Esta imagem está em uso em uma publicação do Blog. Troque-a na publicação antes de excluir.");
 
   const removal = await ctx.supabase.storage.from(ASSETS_BUCKET).remove([asset.path]);
   if (removal.error) return fail("Não foi possível excluir a imagem.");

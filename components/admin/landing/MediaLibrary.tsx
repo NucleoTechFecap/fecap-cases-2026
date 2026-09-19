@@ -12,6 +12,8 @@ export const MEDIA_FOLDERS = [
   { value: "gallery", label: "Galeria" },
   { value: "footer", label: "Footer" },
   { value: "og", label: "Compartilhamento (SEO)" },
+  { value: "blog-covers", label: "Blog · Capas" },
+  { value: "blog-content", label: "Blog · Conteúdo" },
   { value: "miscellaneous", label: "Outros" },
 ] as const;
 

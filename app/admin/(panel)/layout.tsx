@@ -3,6 +3,7 @@ import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { FeedbackProvider } from "@/components/admin/ui/Feedback";
 import { ROLE_LABELS, requirePanelAccess } from "@/lib/landing/auth";
 import "../admin.css";
+import "../blog-admin.css";
 
 export const metadata: Metadata = { title: "Admin | FECAP Cases", robots: { index: false, follow: false } };
 
