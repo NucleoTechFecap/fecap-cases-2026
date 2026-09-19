@@ -2,13 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { PREVIEW_MESSAGE, PREVIEW_READY } from "@/components/admin/landing/LandingPreview";
+import { PagePreview } from "@/components/admin/pages/PagePreview";
+import { PAGE_TARGET_LABELS, type PageTarget } from "@/components/admin/pages/PagesEditor";
 import { FecapCasesLandingPage } from "@/components/landing/FecapCasesLandingPage";
 import { parseLandingConfig } from "@/lib/landing/parse";
 import type { LandingConfig } from "@/lib/landing/schema";
 
-/** Roda dentro do iframe: recebe o rascunho do editor e renderiza a landing real, sem GSAP. */
+/** Roda dentro do iframe: recebe o rascunho do editor e renderiza a landing (ou a página interna) real, sem GSAP. */
 export function PreviewClient() {
   const [config, setConfig] = useState<LandingConfig | null>(null);
+  const [page, setPage] = useState<PageTarget | null>(null);
 
   useEffect(() => {
     const onMessage = (event: MessageEvent) => {
@@ -16,6 +19,8 @@ export function PreviewClient() {
 
       // O rascunho pode estar no meio de uma edição inválida: o parser tolerante evita quebrar o preview.
       setConfig(parseLandingConfig(event.data.config));
+      const nextPage: unknown = event.data.page;
+      setPage(typeof nextPage === "string" && Object.hasOwn(PAGE_TARGET_LABELS, nextPage) ? (nextPage as PageTarget) : null);
 
       const focus = event.data.focusSectionId as string | null;
       if (focus) {
@@ -42,7 +47,7 @@ export function PreviewClient() {
       }}
       onSubmitCapture={(event) => event.preventDefault()}
     >
-      <FecapCasesLandingPage config={config} animated={false} />
+      {page ? <PagePreview target={page} config={config} /> : <FecapCasesLandingPage config={config} animated={false} />}
     </div>
   );
 }

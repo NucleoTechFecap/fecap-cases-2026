@@ -24,14 +24,17 @@ import { SectionEditor } from "@/components/admin/landing/SectionEditor";
 import { SeoEditor } from "@/components/admin/landing/SeoEditor";
 import { SettingsEditor } from "@/components/admin/landing/SettingsEditor";
 import { VersionHistory } from "@/components/admin/landing/VersionHistory";
+import { PAGE_TARGET_LABELS, PageEditor, type PageTarget, PagesList } from "@/components/admin/pages/PagesEditor";
 import { useFeedback } from "@/components/admin/ui/Feedback";
 import { Group, Toggle } from "@/components/admin/ui/Fields";
 import { DEFAULT_LANDING_CONFIG, defaultSection } from "@/lib/landing/defaults";
+import { defaultPage } from "@/lib/landing/pages-defaults";
 import { describeIssues } from "@/lib/landing/parse";
 import { type LandingConfig, type LandingSection, landingConfigSchema } from "@/lib/landing/schema";
 
 const TABS = [
   { id: "content", label: "Conteúdo" },
+  { id: "pages", label: "Páginas" },
   { id: "design", label: "Design" },
   { id: "seo", label: "SEO" },
   { id: "media", label: "Mídia" },
@@ -57,6 +60,7 @@ export function LandingEditor({ initial, canEdit, canPublish }: LandingEditorPro
   const [autosave, setAutosave] = useState(true);
   const [tab, setTab] = useState<TabId>("content");
   const [target, setTarget] = useState<string | null>(null);
+  const [pageTarget, setPageTarget] = useState<PageTarget | null>(null);
   const [viewing, setViewing] = useState<Viewing | null>(null);
   const [mobileView, setMobileView] = useState<"editor" | "preview">("editor");
   const [refreshKey, setRefreshKey] = useState(0);
@@ -163,6 +167,7 @@ export function LandingEditor({ initial, canEdit, canPublish }: LandingEditorPro
     setSavedSnapshot(JSON.stringify(result.data.draft));
     setUnpublished(false);
     setTarget(null);
+    setPageTarget(null);
     setRefreshKey((key) => key + 1);
     toast("Alterações descartadas.");
   }
@@ -214,10 +219,23 @@ export function LandingEditor({ initial, canEdit, canPublish }: LandingEditorPro
     void logItemAction("section_reset", sectionLabel(section, config.sections));
   }
 
+  async function handleResetPage(page: PageTarget) {
+    const confirmed = await confirm({
+      title: "Restaurar configuração padrão?",
+      description: `Os textos e itens de "${PAGE_TARGET_LABELS[page]}" voltam ao conteúdo original do site. Nada é publicado até você clicar em Publicar.`,
+      confirmLabel: "Restaurar página",
+      destructive: true,
+    });
+    if (!confirmed) return;
+
+    setConfig((current) => ({ ...current, pages: { ...current.pages, [page]: defaultPage(page) } }));
+    void logItemAction("section_reset", `Página: ${PAGE_TARGET_LABELS[page]}`);
+  }
+
   async function handleResetAll() {
     const confirmed = await confirm({
       title: "Restaurar TODA a landing page?",
-      description: "Todas as seções, cores, SEO e configurações do rascunho voltam ao conteúdo original do site. Nada é publicado até você clicar em Publicar.",
+      description: "Todas as seções, páginas internas, cores, SEO e configurações do rascunho voltam ao conteúdo original do site. Nada é publicado até você clicar em Publicar.",
       confirmLabel: "Sim, restaurar tudo",
       destructive: true,
     });
@@ -225,6 +243,7 @@ export function LandingEditor({ initial, canEdit, canPublish }: LandingEditorPro
 
     setConfig(structuredClone(DEFAULT_LANDING_CONFIG));
     setTarget(null);
+    setPageTarget(null);
     void logItemAction("landing_reset", "Rascunho restaurado ao padrão");
     toast("Rascunho restaurado ao padrão. Publique para aplicar no site.", "info");
   }
@@ -242,7 +261,7 @@ export function LandingEditor({ initial, canEdit, canPublish }: LandingEditorPro
       <div className="adm-editor" data-mobile-view={mobileView}>
         <header className="adm-topbar">
           <div className="adm-topbar-title">
-            <h1>Landing Page</h1>
+            <h1>Site e páginas</h1>
             <p>
               Última publicação: <strong>{published.at ? formatDateTime(published.at).replace(",", " às") : "ainda não publicada"}</strong>
               {published.version !== null && <> · versão {published.version}</>}
@@ -307,6 +326,7 @@ export function LandingEditor({ initial, canEdit, canPublish }: LandingEditorPro
                   onClick={() => {
                     setTab(item.id);
                     setTarget(null);
+                    setPageTarget(null);
                   }}
                   key={item.id}
                 >
@@ -350,6 +370,30 @@ export function LandingEditor({ initial, canEdit, canPublish }: LandingEditorPro
                   </>
                 )}
 
+                {tab === "pages" && pageTarget === null && (
+                  <>
+                    <p className="adm-intro">
+                      Escolha uma página do site para editar. Header, footer, cores e faixa são os mesmos da landing. As alterações entram no mesmo rascunho e só vão ao ar em “Publicar alterações”.
+                    </p>
+                    <PagesList onEdit={setPageTarget} />
+                  </>
+                )}
+
+                {tab === "pages" && pageTarget !== null && (
+                  <>
+                    <div className="adm-breadcrumb">
+                      <button type="button" className="adm-btn adm-btn-small" onClick={() => setPageTarget(null)}>
+                        ← Todas as páginas
+                      </button>
+                      <h2>{PAGE_TARGET_LABELS[pageTarget]}</h2>
+                      <button type="button" className="adm-btn adm-btn-small" onClick={() => handleResetPage(pageTarget)}>
+                        Restaurar padrão
+                      </button>
+                    </div>
+                    <PageEditor target={pageTarget} pages={config.pages} onChange={(pages) => setConfig((current) => ({ ...current, pages }))} />
+                  </>
+                )}
+
                 {tab === "design" && <DesignEditor value={config.design} onChange={(design) => setConfig((current) => ({ ...current, design }))} />}
                 {tab === "seo" && <SeoEditor value={config.seo} siteName={config.event.name} onChange={(seo) => setConfig((current) => ({ ...current, seo }))} />}
                 {tab === "media" && (
@@ -388,7 +432,7 @@ export function LandingEditor({ initial, canEdit, canPublish }: LandingEditorPro
           </section>
 
           <section className="adm-preview-pane" aria-label="Preview">
-            <LandingPreview config={viewing?.config ?? config} focusSectionId={viewing ? null : target} />
+            <LandingPreview config={viewing?.config ?? config} focusSectionId={viewing ? null : target} page={tab === "pages" ? pageTarget : null} />
           </section>
         </div>
       </div>

@@ -10,6 +10,7 @@ import {
   SPONSOR_GROUPS,
 } from "@/data/fecapCases";
 import { FECAP_CASES_KEYWORDS } from "@/data/seo";
+import { DEFAULT_PAGES } from "@/lib/landing/pages-defaults";
 import type { CmsButton, LandingConfig, SectionStyles, SectionType } from "@/lib/landing/schema";
 
 // Configuração padrão = conteúdo que já estava hardcoded na landing.
@@ -273,6 +274,7 @@ export const DEFAULT_LANDING_CONFIG: LandingConfig = {
       },
     },
   ],
+  pages: DEFAULT_PAGES,
 };
 
 export function defaultSection<T extends SectionType>(type: T) {

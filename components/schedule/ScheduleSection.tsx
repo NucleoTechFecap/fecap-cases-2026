@@ -5,12 +5,16 @@ import gsap from "gsap";
 import { type KeyboardEvent, useRef, useState } from "react";
 import { REDUCED_MOTION } from "@/components/landing/animations";
 import { ScheduleBlockCard } from "@/components/schedule/ScheduleBlockCard";
-import type { ScheduleDay } from "@/data/schedule";
+import type { PageHero, ScheduleDay } from "@/lib/landing/pages-schema";
 
 gsap.registerPlugin(useGSAP);
 
-export function ScheduleSection({ days }: { days: ScheduleDay[] }) {
-  const [activeIndex, setActiveIndex] = useState(0);
+type ScheduleSectionProps = { hero: PageHero; days: ScheduleDay[]; animated?: boolean };
+
+export function ScheduleSection({ hero, days, animated = true }: ScheduleSectionProps) {
+  const [selectedIndex, setActiveIndex] = useState(0);
+  // No painel um dia pode ser excluído enquanto está selecionado.
+  const activeIndex = Math.min(selectedIndex, days.length - 1);
   const sectionRef = useRef<HTMLElement>(null);
   const isFirstRender = useRef(true);
   const activeDay = days[activeIndex];
@@ -23,7 +27,7 @@ export function ScheduleSection({ days }: { days: ScheduleDay[] }) {
         return;
       }
 
-      if (window.matchMedia(REDUCED_MOTION).matches) return;
+      if (!animated || window.matchMedia(REDUCED_MOTION).matches) return;
 
       gsap.from(".schedule-block", {
         y: 36,
@@ -51,12 +55,9 @@ export function ScheduleSection({ days }: { days: ScheduleDay[] }) {
     <section className="schedule-section" id="programacao" ref={sectionRef}>
       <div className="schedule-hero">
         <div className="schedule-hero-content shell">
-          <p className="eyebrow">PROGRAMAÇÃO</p>
-          <h1>Programação Completa</h1>
-          <p className="schedule-lead">
-            Navegue entre os dias. Cada noite traz workshops simultâneos, ativações culturais e duas palestras no
-            Teatro.
-          </p>
+          {hero.eyebrow.trim() && <p className="eyebrow">{hero.eyebrow}</p>}
+          <h1>{hero.title}</h1>
+          {hero.lead.trim() && <p className="schedule-lead">{hero.lead}</p>}
 
           <div className="schedule-tabs" role="tablist" aria-label="Dias do evento" onKeyDown={handleKeyDown}>
             {days.map((day, index) => (
@@ -84,7 +85,7 @@ export function ScheduleSection({ days }: { days: ScheduleDay[] }) {
         aria-labelledby={`tab-${activeDay.id}`}
       >
         {activeDay.blocks.map((block) => (
-          <ScheduleBlockCard block={block} key={`${activeDay.id}-${block.time}`} />
+          <ScheduleBlockCard block={block} key={block.id} />
         ))}
       </div>
     </section>

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { PreviewClient } from "@/components/admin/landing/PreviewClient";
 import { requirePanelAccess } from "@/lib/landing/auth";
+// O preview também renderiza a página de Programação.
+import "@/app/programacao/programacao.css";
 
 export const metadata: Metadata = { title: "Preview | FECAP Cases", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";

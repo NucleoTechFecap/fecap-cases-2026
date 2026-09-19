@@ -11,7 +11,9 @@ function normalize(text: string) {
     .toLowerCase();
 }
 
-export function FaqExplorer({ items }: { items: FaqItem[] }) {
+type FaqExplorerProps = { items: FaqItem[]; searchLabel?: string; searchPlaceholder?: string };
+
+export function FaqExplorer({ items, searchLabel = "Buscar nas dúvidas", searchPlaceholder = "Ex.: certificado, inscrição, horário…" }: FaqExplorerProps) {
   const [query, setQuery] = useState("");
 
   const filtered = useMemo(() => {
@@ -23,10 +25,10 @@ export function FaqExplorer({ items }: { items: FaqItem[] }) {
   return (
     <div className="faq-explorer">
       <label className="faq-search">
-        <span>Buscar nas dúvidas</span>
+        <span>{searchLabel}</span>
         <input
           type="search"
-          placeholder="Ex.: certificado, inscrição, horário…"
+          placeholder={searchPlaceholder}
           value={query}
           onChange={(event) => setQuery(event.target.value)}
         />
