@@ -76,7 +76,7 @@ export function SettingsEditor({ event, onEventChange, social, onSocialChange }:
           type="button"
           className="adm-btn adm-btn-add"
           disabled={social.length >= 10}
-          onClick={() => onSocialChange([...social, { id: newId("s"), network: "instagram", url: "https://instagram.com/", active: true, showInHeader: false }])}
+          onClick={() => onSocialChange([...social, { id: newId("s"), network: "instagram", url: "https://www.instagram.com/fecapcases/", active: true, showInHeader: false }])}
         >
           + Adicionar rede
         </button>
