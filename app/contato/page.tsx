@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/data/seo";
 import { ContactSection } from "@/components/landing/ContactSection";
 import { PageShell } from "@/components/pages/PageShell";
 import { SectionHead } from "@/components/pages/SectionHead";
@@ -7,11 +8,12 @@ import { findSection, phoneHref } from "@/lib/landing/derive";
 import { getPublishedLanding } from "@/lib/landing/queries";
 import { safeHref } from "@/lib/landing/urls";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Contato | FECAP Cases 2026",
   description:
     "Fale com a organização do FECAP Cases 2026: e-mail, telefone, endereço e formulário de contato.",
-};
+  path: "/contato",
+});
 
 export default async function ContactPage() {
   const { config } = await getPublishedLanding();

@@ -3,7 +3,7 @@ import { FecapCasesLandingPage } from "@/components/landing";
 import { getPublishedLanding } from "@/lib/landing/queries";
 import { safeImage } from "@/lib/landing/urls";
 import { getSiteUrl } from "@/lib/blog/site";
-import { FECAP_CASES_KEYWORDS } from "@/data/seo";
+import { DEFAULT_OG_IMAGE, FECAP_CASES_KEYWORDS } from "@/data/seo";
 
 // SEO vem da versão PUBLICADA (nunca do rascunho).
 export async function generateMetadata(): Promise<Metadata> {
@@ -13,9 +13,11 @@ export async function generateMetadata(): Promise<Metadata> {
   const title = seo.title || event.name;
   const siteUrl = await getSiteUrl();
   const canonicalUrl = seo.canonicalUrl || siteUrl || undefined;
-  // A imagem do CMS tem prioridade; sem upload, a rota /opengraph-image gera a arte de marca.
-  const ogImage = safeImage(seo.ogImage) || "/opengraph-image";
-  const twitterImage = safeImage(seo.twitterImage) || ogImage;
+  // A imagem enviada pelo CMS tem prioridade; sem upload, vale a arte oficial (public/og-image.jpg).
+  const cmsImage = safeImage(seo.ogImage);
+  const alt = `${event.name} — ${seo.ogTitle || title}`;
+  const ogImage = cmsImage ? { url: cmsImage, alt } : DEFAULT_OG_IMAGE;
+  const twitterImage = safeImage(seo.twitterImage) || ogImage.url;
   const metadataBase = siteUrl ? new URL(siteUrl) : undefined;
 
   return {
@@ -32,7 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title: seo.ogTitle || title,
       description: seo.ogDescription || seo.description,
       url: canonicalUrl,
-      images: [{ url: ogImage, width: 1200, height: 630, alt: `${event.name} — ${seo.ogTitle || title}` }],
+      images: [ogImage],
     },
     twitter: {
       card: "summary_large_image",

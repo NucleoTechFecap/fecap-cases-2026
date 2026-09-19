@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/data/seo";
 import { PageShell } from "@/components/pages/PageShell";
 import { SectionHead } from "@/components/pages/SectionHead";
 import { EVENT_STATS } from "@/data/fecapCases";
@@ -9,11 +10,12 @@ import {
   NIGHT_FLOW,
 } from "@/data/pages";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Sobre | FECAP Cases 2026",
   description:
     "Conheça o FECAP Cases 2026 — Direções: o que é, como funciona cada noite e quem faz o evento.",
-};
+  path: "/sobre",
+});
 
 export default function AboutPage() {
   return (

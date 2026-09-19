@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/data/seo";
 import { CmsImage } from "@/components/landing/cms/CmsImage";
 import { SponsorGroup } from "@/components/landing/SponsorGroup";
 import { PageShell } from "@/components/pages/PageShell";
@@ -8,11 +9,12 @@ import { defaultSection } from "@/lib/landing/defaults";
 import { findSection } from "@/lib/landing/derive";
 import { getPublishedLanding } from "@/lib/landing/queries";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Patrocinadores | FECAP Cases 2026",
   description:
     "Marcas que apoiam o FECAP Cases 2026 e como se tornar patrocinador, apoiador ou parceiro do evento.",
-};
+  path: "/patrocinadores",
+});
 
 export default async function SponsorsPage() {
   const { config } = await getPublishedLanding();

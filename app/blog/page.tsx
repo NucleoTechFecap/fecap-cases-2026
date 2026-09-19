@@ -7,6 +7,7 @@ import { BlogSearch } from "@/components/blog/BlogSearch";
 import { PageShell } from "@/components/pages/PageShell";
 import { SectionHead } from "@/components/pages/SectionHead";
 import { getBlogTaxonomy, getFeaturedPost, listPublicPosts } from "@/lib/blog/queries";
+import { DEFAULT_OG_IMAGE } from "@/data/seo";
 import { getSiteUrl } from "@/lib/blog/site";
 import "./blog.css";
 
@@ -35,7 +36,8 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
     alternates: siteUrl ? { canonical: `${siteUrl}/blog` } : undefined,
     // Resultados de busca/filtro não são indexados: evita conteúdo duplicado.
     robots: isFiltered ? { index: false, follow: true } : undefined,
-    openGraph: { type: "website", locale: "pt_BR", title: "Blog FECAP Cases", description, url: siteUrl ? `${siteUrl}/blog` : undefined },
+    openGraph: { type: "website", locale: "pt_BR", siteName: "FECAP Cases", title: "Blog FECAP Cases", description, url: siteUrl ? `${siteUrl}/blog` : undefined, images: [DEFAULT_OG_IMAGE] },
+    twitter: { card: "summary_large_image", title: "Blog FECAP Cases", description, images: [DEFAULT_OG_IMAGE.url] },
   };
 }
 
