@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Archivo, Inter, Poppins, Space_Grotesk } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { PageTransition } from "@/components/PageTransition";
 import { DEFAULT_OG_IMAGE, ENV_SITE_ORIGIN, FECAP_CASES_KEYWORDS } from "@/data/seo";
 import "./globals.css";
@@ -42,6 +43,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <style>{".site-header,.hero-content>*,.schedule-hero-content>*,.page-hero-content>*{visibility:visible!important}"}</style>
         </noscript>
         <PageTransition>{children}</PageTransition>
+        <Analytics />
       </body>
     </html>
   );
