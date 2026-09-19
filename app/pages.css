@@ -176,3 +176,7 @@
 @media(max-width:420px){
   .ticket-grid{grid-template-columns:1fr}
 }
+
+/* ---------- 404 ---------- */
+.nf-code{display:flex;align-items:center;justify-content:center;gap:clamp(6px,1.2vw,18px);margin:0 0 clamp(18px,2.4vw,34px);color:#fff;font-family:var(--font-wide),Arial,sans-serif;font-stretch:125%;font-weight:900;font-size:clamp(96px,19vw,270px);line-height:.8;letter-spacing:-.06em;text-shadow:.035em .03em 0 var(--blue)}
+.nf-code svg{width:1.05em;height:auto;overflow:visible;fill:var(--lime);filter:drop-shadow(.03em .028em 0 var(--blue));transform:rotate(-6deg)}
