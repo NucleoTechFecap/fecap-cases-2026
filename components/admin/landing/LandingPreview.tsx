@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { PageTarget } from "@/components/admin/pages/PagesEditor";
 import type { LandingConfig } from "@/lib/landing/schema";
 
 const DEVICES = {
@@ -19,14 +20,21 @@ export const PREVIEW_READY = "fecap-landing-preview-ready";
  * rascunho por postMessage. O iframe tem a largura real do dispositivo (media queries
  * de verdade) e é reduzido com scale para caber no painel.
  */
-export function LandingPreview({ config, focusSectionId }: { config: LandingConfig; focusSectionId: string | null }) {
+type LandingPreviewProps = {
+  config: LandingConfig;
+  focusSectionId: string | null;
+  /** Página interna em edição; null = landing. */
+  page?: PageTarget | null;
+};
+
+export function LandingPreview({ config, focusSectionId, page = null }: LandingPreviewProps) {
   const [device, setDevice] = useState<Device>("desktop");
   const [box, setBox] = useState({ width: 0, height: 0 });
   const [ready, setReady] = useState(false);
   const frame = useRef<HTMLIFrameElement>(null);
   const stage = useRef<HTMLDivElement>(null);
-  const latest = useRef({ config, focusSectionId });
-  latest.current = { config, focusSectionId };
+  const latest = useRef({ config, focusSectionId, page });
+  latest.current = { config, focusSectionId, page };
 
   const send = useCallback(() => {
     frame.current?.contentWindow?.postMessage({ type: PREVIEW_MESSAGE, ...latest.current }, window.location.origin);
@@ -47,7 +55,7 @@ export function LandingPreview({ config, focusSectionId }: { config: LandingConf
     if (!ready) return;
     const timer = window.setTimeout(send, 120);
     return () => window.clearTimeout(timer);
-  }, [config, focusSectionId, ready, send]);
+  }, [config, focusSectionId, page, ready, send]);
 
   useEffect(() => {
     const element = stage.current;

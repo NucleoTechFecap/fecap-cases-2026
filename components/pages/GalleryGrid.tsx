@@ -4,16 +4,24 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useRef, useState } from "react";
 import { REDUCED_MOTION } from "@/components/landing/animations";
-import { GALLERY_CATEGORIES, type GalleryCategory, type GalleryItem } from "@/data/pages";
+import type { GalleryCategory, GalleryItem } from "@/lib/landing/pages-schema";
+import { safeImage } from "@/lib/landing/urls";
 
 gsap.registerPlugin(useGSAP);
 
-export function GalleryGrid({ items }: { items: GalleryItem[] }) {
-  const [category, setCategory] = useState<GalleryCategory>("Todos");
+const ALL = "";
+
+type GalleryGridProps = { items: GalleryItem[]; categories: GalleryCategory[]; allLabel: string };
+
+export function GalleryGrid({ items, categories, allLabel }: GalleryGridProps) {
+  const [selected, setSelected] = useState(ALL);
   const rootRef = useRef<HTMLDivElement>(null);
   const isFirstRender = useRef(true);
 
-  const visible = category === "Todos" ? items : items.filter((item) => item.category === category);
+  // No painel a categoria selecionada pode ser excluída durante a edição.
+  const category = categories.some((item) => item.id === selected) ? selected : ALL;
+  const visible = category === ALL ? items : items.filter((item) => item.categoryId === category);
+  const categoryName = (id: string) => categories.find((item) => item.id === id)?.name ?? "";
 
   // Troca de filtro: as fotos reaparecem em cascata.
   useGSAP(
@@ -39,26 +47,37 @@ export function GalleryGrid({ items }: { items: GalleryItem[] }) {
 
   return (
     <div ref={rootRef}>
-      <div className="gallery-filters" role="group" aria-label="Filtrar fotos por categoria" data-reveal>
-        {GALLERY_CATEGORIES.map((item) => (
-          <button type="button" aria-pressed={item === category} onClick={() => setCategory(item)} key={item}>
-            {item}
-          </button>
-        ))}
-      </div>
+      {categories.length > 0 && (
+        <div className="gallery-filters" role="group" aria-label="Filtrar fotos por categoria" data-reveal>
+          {[{ id: ALL, name: allLabel || "Todos" }, ...categories].map((item) => (
+            <button type="button" aria-pressed={item.id === category} onClick={() => setSelected(item.id)} key={item.id}>
+              {item.name}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="gallery-grid" data-reveal-group>
-        {visible.map((item) => (
-          <figure className={`gallery-item gallery-${item.shape} gallery-tone-${item.tone}`} key={item.id}>
-            <span className="gallery-placeholder" aria-hidden="true">
-              FOTO
-            </span>
-            <figcaption>
-              <strong>{item.category}</strong>
-              {item.caption}
-            </figcaption>
-          </figure>
-        ))}
+        {visible.map((item) => {
+          const src = safeImage(item.imageUrl);
+
+          return (
+            <figure className={`gallery-item gallery-${item.shape} gallery-tone-${item.tone}`} key={item.id}>
+              {src ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img className="gallery-photo" src={src} alt={item.alt || item.caption} loading="lazy" decoding="async" />
+              ) : (
+                <span className="gallery-placeholder" aria-hidden="true">
+                  FOTO
+                </span>
+              )}
+              <figcaption>
+                <strong>{categoryName(item.categoryId)}</strong>
+                {item.caption}
+              </figcaption>
+            </figure>
+          );
+        })}
       </div>
     </div>
   );

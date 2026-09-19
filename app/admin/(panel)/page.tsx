@@ -61,7 +61,7 @@ export default async function AdminHomePage() {
         </div>
         <div className="adm-home-hero-actions">
           <a className="adm-cta adm-cta-lime" href="/admin/landing-page">
-            {session.canEdit ? "Editar landing page" : "Ver landing page"}
+            {session.canEdit ? "Editar site e páginas" : "Ver site e páginas"}
           </a>
           {session.canEdit && (
             <a className="adm-cta adm-cta-outline" href="/admin/blog/new">
@@ -84,7 +84,7 @@ export default async function AdminHomePage() {
 
       <div className="adm-home-grid">
         <section className="adm-home-landing">
-          <p className="adm-eyebrow">Landing page</p>
+          <p className="adm-eyebrow">Landing page e páginas internas</p>
           {!landing.ok ? (
             <h2>{landing.error}</h2>
           ) : !landing.data.initialized ? (

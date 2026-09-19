@@ -1,14 +1,6 @@
 import { z } from "zod";
-import { isSafeImageUrl, isSafeUrl } from "@/lib/landing/urls";
-
-// ---------- Primitivos validados ----------
-const text = (max: number) => z.string().max(max);
-const hexColor = z.string().regex(/^#[0-9a-fA-F]{6}$/, "Cor inválida");
-/** "" = usar a cor padrão do tema. */
-const optionalColor = z.union([hexColor, z.literal("")]);
-const linkUrl = z.string().max(500).refine(isSafeUrl, "Link inválido ou inseguro");
-const imageUrl = z.string().max(700).refine(isSafeImageUrl, "Imagem inválida");
-const id = z.string().min(1).max(60);
+import { pagesSchema } from "@/lib/landing/pages-schema";
+import { hexColor, id, imageUrl, linkUrl, optionalColor, text } from "@/lib/landing/primitives";
 
 export const FONT_OPTIONS = ["system", "archivo", "inter", "poppins", "space-grotesk"] as const;
 export const SOCIAL_NETWORKS = ["instagram", "tiktok", "youtube", "linkedin", "whatsapp", "facebook", "x"] as const;
@@ -278,6 +270,8 @@ export const landingConfigSchema = z.object({
   header: headerSchema,
   footer: footerSchema,
   sections: z.array(sectionSchema).min(1).max(24),
+  /** Conteúdo das páginas internas (Sobre, Programação, Galeria…). */
+  pages: pagesSchema,
 });
 
 export type LandingConfig = z.infer<typeof landingConfigSchema>;

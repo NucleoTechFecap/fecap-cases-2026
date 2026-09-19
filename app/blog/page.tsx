@@ -9,6 +9,8 @@ import { SectionHead } from "@/components/pages/SectionHead";
 import { getBlogTaxonomy, getFeaturedPost, listPublicPosts } from "@/lib/blog/queries";
 import { DEFAULT_OG_IMAGE } from "@/data/seo";
 import { getSiteUrl } from "@/lib/blog/site";
+import { DEFAULT_PAGES } from "@/lib/landing/pages-defaults";
+import { getPublishedLanding } from "@/lib/landing/queries";
 import "./blog.css";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
@@ -28,10 +30,12 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
   const filters = readParams(await searchParams);
   const siteUrl = await getSiteUrl();
   const isFiltered = Boolean(filters.query || filters.category || filters.tag || filters.page > 1);
-  const description = "Artigos, bastidores e conteúdos do FECAP Cases sobre comunicação, mercado, carreira e inovação.";
+  const { config } = await getPublishedLanding();
+  const title = config.pages.blog.seo.title.trim() || DEFAULT_PAGES.blog.seo.title;
+  const description = config.pages.blog.seo.description.trim() || DEFAULT_PAGES.blog.seo.description;
 
   return {
-    title: "Blog | FECAP Cases",
+    title,
     description,
     alternates: siteUrl ? { canonical: `${siteUrl}/blog` } : undefined,
     // Resultados de busca/filtro não são indexados: evita conteúdo duplicado.
@@ -45,7 +49,8 @@ export default async function BlogPage({ searchParams }: { searchParams: SearchP
   const filters = readParams(await searchParams);
   const isFiltered = Boolean(filters.query || filters.category || filters.tag);
 
-  const [list, taxonomy, featured] = await Promise.all([
+  const [{ config }, list, taxonomy, featured] = await Promise.all([
+    getPublishedLanding(),
     listPublicPosts(filters),
     getBlogTaxonomy(),
     // O destaque só aparece na primeira página da listagem "limpa".
@@ -54,13 +59,14 @@ export default async function BlogPage({ searchParams }: { searchParams: SearchP
 
   const posts = featured ? list.posts.filter((post) => post.id !== featured.id) : list.posts;
   const activeCategory = taxonomy.categories.find((item) => item.slug === filters.category);
+  const { hero } = config.pages.blog;
 
   return (
     <PageShell
       activeHref="/blog"
-      eyebrow="BLOG"
-      title="Blog FECAP Cases"
-      lead="Conteúdos, bastidores e ideias de quem faz o FECAP Cases acontecer."
+      eyebrow={hero.eyebrow}
+      title={hero.title}
+      lead={hero.lead}
     >
       {featured && (
         <section className="page-section blog-featured-section">

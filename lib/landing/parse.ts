@@ -1,4 +1,5 @@
 import { DEFAULT_LANDING_CONFIG } from "@/lib/landing/defaults";
+import { pagesSchema } from "@/lib/landing/pages-schema";
 import { type LandingConfig, type SectionType, landingConfigSchema, sectionSchema } from "@/lib/landing/schema";
 
 type Json = Record<string, unknown>;
@@ -57,6 +58,14 @@ export function parseLandingConfig(raw: unknown): LandingConfig {
     const part = landingConfigSchema.shape[key].safeParse(candidate[key]);
     if (part.success) recovered[key] = part.data;
   }
+
+  // Páginas internas: uma página inválida não derruba as outras.
+  const pages: Json = { ...DEFAULT_LANDING_CONFIG.pages };
+  for (const key of Object.keys(pagesSchema.shape) as (keyof typeof pagesSchema.shape)[]) {
+    const part = pagesSchema.shape[key].safeParse(candidate.pages[key]);
+    if (part.success) pages[key] = part.data;
+  }
+  recovered.pages = pages;
 
   const final = landingConfigSchema.safeParse(recovered);
   return final.success ? final.data : DEFAULT_LANDING_CONFIG;

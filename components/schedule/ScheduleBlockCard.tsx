@@ -1,4 +1,5 @@
-import type { ScheduleBlock } from "@/data/schedule";
+import { safeImage } from "@/lib/landing/urls";
+import type { ScheduleBlock } from "@/lib/landing/pages-schema";
 
 function BlockHeader({ block }: { block: ScheduleBlock }) {
   return (
@@ -36,7 +37,7 @@ export function ScheduleBlockCard({ block }: { block: ScheduleBlock }) {
       <article className="schedule-block schedule-workshops">
         <BlockHeader block={block} />
         {block.sessions.map((session) => (
-          <div className="workshop-card" key={session.label}>
+          <div className="workshop-card" key={session.id}>
             <div className="workshop-card-top">
               <strong>{session.label}</strong>
               <span className="schedule-tag">{session.room}</span>
@@ -58,12 +59,15 @@ export function ScheduleBlockCard({ block }: { block: ScheduleBlock }) {
     );
   }
 
+  const photo = safeImage(block.speaker.photoUrl);
+
   return (
     <article className="schedule-block schedule-talk">
       <BlockHeader block={block} />
       <div className="talk-speaker">
         <div className="talk-avatar">
-          <PersonIcon />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          {photo ? <img src={photo} alt="" loading="lazy" decoding="async" /> : <PersonIcon />}
         </div>
         <div>
           <h4>{block.speaker.name}</h4>
@@ -71,9 +75,12 @@ export function ScheduleBlockCard({ block }: { block: ScheduleBlock }) {
           <p className="talk-bio">{block.speaker.bio}</p>
         </div>
       </div>
-      <p className="talk-moderator">
-        Mediador: <strong>{block.moderator.name}</strong> — {block.moderator.role}
-      </p>
+      {block.moderator.name.trim() && (
+        <p className="talk-moderator">
+          Mediador: <strong>{block.moderator.name}</strong>
+          {block.moderator.role.trim() && <> — {block.moderator.role}</>}
+        </p>
+      )}
     </article>
   );
 }

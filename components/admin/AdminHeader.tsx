@@ -12,7 +12,7 @@ const BLOG_SECTIONS = ["/admin/blog/categories", "/admin/blog/tags", "/admin/blo
 
 const NAV: NavItem[] = [
   { href: "/admin", label: "Início", isActive: (pathname) => pathname === "/admin" },
-  { href: "/admin/landing-page", label: "Landing Page" },
+  { href: "/admin/landing-page", label: "Site e páginas" },
   {
     href: "/admin/blog",
     label: "Publicações",
