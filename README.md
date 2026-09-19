@@ -1,6 +1,6 @@
 # FECAP Cases Landing Page
 
-Landing page do FECAP Cases construída em React + Next.js 15 com App Router e TypeScript.
+Landing page do FECAP Cases construída em React + Next.js 16 com App Router e TypeScript.
 
 ## Rodando o projeto
 

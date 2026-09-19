@@ -4,7 +4,7 @@ import { SUPABASE_ANON_KEY, SUPABASE_URL, isSupabaseConfigured } from "@/lib/sup
 
 // Renova a sessão e barra visitantes sem login em /admin.
 // A checagem de ROLE acontece no servidor (layout/actions) e no banco (RLS).
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
   const isLogin = request.nextUrl.pathname === "/admin/login";
 

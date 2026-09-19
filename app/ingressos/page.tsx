@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/data/seo";
 import { PageShell } from "@/components/pages/PageShell";
 import { SectionHead } from "@/components/pages/SectionHead";
 import { EVENT_CONFIG } from "@/data/fecapCases";
 import { TICKET_NOTES, TICKET_STEPS } from "@/data/pages";
 import { SCHEDULE_DAYS } from "@/data/schedule";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Ingressos | FECAP Cases 2026",
   description: "Garanta gratuitamente o seu ingresso para as noites do FECAP Cases 2026 pela Sympla.",
-};
+  path: "/ingressos",
+});
 
 export default function TicketsPage() {
   return (

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>FECAP Cases 2026 — Direções</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff5a1f"/>
+      <stop offset=".55" stop-color="#c9260c"/>
+      <stop offset="1" stop-color="#6e090b"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
+  <!-- O "õ" em perspectiva da marca Direções (public/logos/logo_direcoes.svg). -->
+  <g transform="translate(-70 -13.4) scale(1.1)">
+    <path fill="#cfff00" d="M85.7288 35.5667L78.4971 31.2466L76.0018 32.7372L83.2335 37.0573L85.7288 35.5667Z"/>
+    <path fill="#cfff00" d="M118.181 26.8728L89.0613 44.3443L89.2596 59L67.3185 45.5751L67.318 29.3473L88.0807 41.7523L118.181 23.5759V26.8728ZM70.5575 43.7834L85.9678 53.2123L85.8458 44.1904L70.5573 35.0559L70.5575 43.7834Z"/>
+    <path fill="#8ea122" d="M70.5575 43.7834L70.5573 35.0559L77.9147 39.4517L70.5575 43.7834Z"/>
+  </g>
+</svg>

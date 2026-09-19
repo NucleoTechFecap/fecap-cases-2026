@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { type ActionResult, audit, fail, guard } from "@/lib/admin/guard";
 import { getAdminSession } from "@/lib/landing/auth";
@@ -41,6 +41,7 @@ export type MediaAsset = {
   createdAt: string;
 };
 
+export type LandingStatus = { initialized: boolean; hasUnpublishedChanges: boolean; publishedAt: string | null; publishedVersion: number | null; draftUpdatedAt: string | null };
 export type AuditEntry = { id: number; action: string; entityType: string; metadata: Record<string, unknown>; createdAt: string };
 export type ContactMessage = { id: string; name: string; email: string; message: string; createdAt: string };
 
@@ -51,30 +52,32 @@ function validateConfig(input: unknown): { config: LandingConfig } | { error: st
 }
 
 function refreshPublicSite() {
-  revalidateTag(LANDING_CACHE_TAG);
+  // updateTag (Next 16): expira o cache na hora — quem publica já vê o resultado na próxima leitura.
+  updateTag(LANDING_CACHE_TAG);
   revalidatePath("/", "layout");
 }
 
 // ---------- Sessão ----------
-export async function signIn(_: { error: string } | null, formData: FormData): Promise<{ error: string }> {
-  if (!isSupabaseConfigured) return { error: "O Supabase ainda não foi configurado neste ambiente." };
-
+// O e-mail volta no estado: o React limpa o formulário após a action e a pessoa teria de redigitá-lo.
+export async function signIn(_: { error: string; email: string } | null, formData: FormData): Promise<{ error: string; email: string }> {
   const email = String(formData.get("email") ?? "").trim();
+  if (!isSupabaseConfigured) return { error: "O Supabase ainda não foi configurado neste ambiente.", email };
+
   const password = String(formData.get("password") ?? "");
-  if (!email || !password) return { error: "Informe e-mail e senha." };
+  if (!email || !password) return { error: "Informe e-mail e senha.", email };
 
   const supabase = await createSessionClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) return { error: "E-mail ou senha inválidos." };
+  if (error) return { error: "E-mail ou senha inválidos.", email };
 
   const session = await getAdminSession();
   if (!session || session.role === "user") {
     await supabase.auth.signOut();
-    return { error: "Esta conta não tem acesso ao painel administrativo." };
+    return { error: "Esta conta não tem acesso ao painel administrativo.", email };
   }
 
   const next = String(formData.get("next") ?? "");
-  redirect(next.startsWith("/admin") && !next.startsWith("/admin/login") ? next : "/admin/landing-page");
+  redirect(next.startsWith("/admin") && !next.startsWith("/admin/login") ? next : "/admin");
 }
 
 export async function signOut() {
@@ -114,7 +117,7 @@ export async function loadEditorData(): Promise<ActionResult<EditorData>> {
     });
     if (init.error) return fail("Não foi possível inicializar a landing page.");
 
-    // Sem revalidar aqui: esta função roda durante o render da página (o Next proíbe revalidateTag
+    // Sem revalidar aqui: esta função roda durante o render da página (o Next proíbe updateTag
     // nesse momento) e a versão 1 é idêntica ao conteúdo padrão que o site já exibe.
     ({ data: page, error } = await query(2));
     if (error || !page) return fail("Não foi possível carregar a landing page.");
@@ -392,6 +395,35 @@ export async function deleteAsset(id: string): Promise<ActionResult<{ id: string
 }
 
 // ---------- Auditoria de itens e consultas do painel ----------
+/** Situação da landing para o Início do painel. Só leitura: quem inicializa o conteúdo é o editor. */
+export async function getLandingStatus(): Promise<ActionResult<LandingStatus>> {
+  const ctx = await guard("view");
+  if (typeof ctx === "string") return fail(ctx);
+
+  const { data: page, error } = await ctx.supabase
+    .from("landing_pages")
+    .select("draft_content, draft_updated_at, published_at, published_version_id")
+    .eq("slug", LANDING_SLUG)
+    .maybeSingle();
+  if (error) return fail("Não foi possível carregar a landing page.");
+  if (!page) return { ok: true, data: { initialized: false, hasUnpublishedChanges: false, publishedAt: null, publishedVersion: null, draftUpdatedAt: null } };
+
+  const { data: version } = page.published_version_id
+    ? await ctx.supabase.from("landing_versions").select("version, content").eq("id", page.published_version_id).maybeSingle()
+    : { data: null };
+
+  return {
+    ok: true,
+    data: {
+      initialized: true,
+      hasUnpublishedChanges: JSON.stringify(page.draft_content) !== JSON.stringify(version?.content ?? null),
+      publishedAt: page.published_at,
+      publishedVersion: version?.version ?? null,
+      draftUpdatedAt: page.draft_updated_at,
+    },
+  };
+}
+
 const ITEM_ACTIONS = ["sponsor_created", "sponsor_deleted", "faq_created", "faq_deleted", "section_reset", "landing_reset"] as const;
 
 export async function logItemAction(action: (typeof ITEM_ACTIONS)[number], label: string): Promise<void> {

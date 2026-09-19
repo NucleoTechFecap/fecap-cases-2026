@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Archivo, Inter, Poppins, Space_Grotesk } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { PageTransition } from "@/components/PageTransition";
-import { FECAP_CASES_KEYWORDS } from "@/data/seo";
+import { DEFAULT_OG_IMAGE, ENV_SITE_ORIGIN, FECAP_CASES_KEYWORDS } from "@/data/seo";
 import "./globals.css";
 import "./pages.css";
 import "./cms.css";
@@ -21,7 +22,7 @@ const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space
 const archivo = Archivo({ subsets: ["latin"], axes: ["wdth"], variable: "--font-wide", display: "swap" });
 
 // Necessário para URLs absolutas de canonical, Open Graph e Twitter em todas as rotas.
-const siteOrigin = process.env.NEXT_PUBLIC_SITE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+const siteOrigin = ENV_SITE_ORIGIN || "http://localhost:3000";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteOrigin),
@@ -29,8 +30,9 @@ export const metadata: Metadata = {
   description:
     "Landing page do FECAP Cases — conteúdo, experiências, conexões e cases que transformam.",
   keywords: [...FECAP_CASES_KEYWORDS],
-  openGraph: { locale: "pt_BR", siteName: "FECAP Cases" },
-  twitter: { card: "summary_large_image" },
+  // Padrão de todas as rotas; cada página sobrescreve com título/descrição próprios.
+  openGraph: { type: "website", locale: "pt_BR", siteName: "FECAP Cases", images: [DEFAULT_OG_IMAGE] },
+  twitter: { card: "summary_large_image", images: [DEFAULT_OG_IMAGE.url] },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -41,6 +43,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <style>{".site-header,.hero-content>*,.schedule-hero-content>*,.page-hero-content>*{visibility:visible!important}"}</style>
         </noscript>
         <PageTransition>{children}</PageTransition>
+        <Analytics />
       </body>
     </html>
   );

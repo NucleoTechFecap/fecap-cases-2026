@@ -13,11 +13,13 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const { next = "", erro } = await searchParams;
 
   const session = await getAdminSession();
-  if (session && session.role !== "user") redirect("/admin/landing-page");
+  if (session && session.role !== "user") redirect("/admin");
 
   return (
     <main className="adm-login">
+      <img className="adm-login-logo" src="/fecap-cases-logo.png" alt="direções — FECAP Cases 2026" width={711} height={355} />
       <div className="adm-login-card">
+        <p className="adm-eyebrow">Painel da organização</p>
         <h1>
           FECAP Cases <span>Admin</span>
         </h1>

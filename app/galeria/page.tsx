@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/data/seo";
 import { GalleryGrid } from "@/components/pages/GalleryGrid";
 import { PageShell } from "@/components/pages/PageShell";
 import { SectionHead } from "@/components/pages/SectionHead";
 import { GALLERY_ITEMS } from "@/data/pages";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Galeria | FECAP Cases 2026",
   description: "Fotos das palestras, workshops, ativações e bastidores do FECAP Cases.",
-};
+  path: "/galeria",
+});
 
 export default function GalleryPage() {
   return (

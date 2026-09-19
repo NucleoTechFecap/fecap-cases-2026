@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/data/seo";
 import { FaqExplorer } from "@/components/pages/FaqExplorer";
 import { PageShell } from "@/components/pages/PageShell";
 import { SectionHead } from "@/components/pages/SectionHead";
@@ -6,11 +7,12 @@ import { defaultSection } from "@/lib/landing/defaults";
 import { findSection } from "@/lib/landing/derive";
 import { getPublishedLanding } from "@/lib/landing/queries";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Dúvidas | FECAP Cases 2026",
   description:
     "Perguntas frequentes sobre inscrição, horários, workshops e certificados do FECAP Cases 2026.",
-};
+  path: "/duvidas",
+});
 
 export default async function FaqPage() {
   const { config } = await getPublishedLanding();

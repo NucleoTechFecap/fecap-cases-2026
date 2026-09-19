@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArticleView } from "@/components/blog/ArticleView";
 import { getPublicPost, getRelatedPosts } from "@/lib/blog/queries";
+import { DEFAULT_OG_IMAGE } from "@/data/seo";
 import { getSiteUrl } from "@/lib/blog/site";
 import { SLUG_PATTERN } from "@/lib/blog/slug";
 import { blogListUrl } from "@/lib/blog/links";
@@ -31,7 +32,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const description = post.seoDescription || post.excerpt || undefined;
   const canonical = post.canonicalUrl || (siteUrl ? `${siteUrl}/blog/${post.slug}` : undefined);
   const image = safeImage(post.ogImageUrl) || safeImage(post.coverImageUrl);
-  const images = image ? [{ url: absolute(siteUrl, image), alt: post.coverImageAlt || undefined }] : undefined;
+  // Sem capa nem imagem de SEO, o artigo compartilha com a arte oficial do evento.
+  const images = image ? [{ url: absolute(siteUrl, image), alt: post.coverImageAlt || undefined }] : [DEFAULT_OG_IMAGE];
 
   return {
     title: `${title} | Blog FECAP Cases`,
@@ -53,10 +55,10 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       tags: post.tags.map((tag) => tag.name),
     },
     twitter: {
-      card: image ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title: post.ogTitle || title,
       description: post.ogDescription || description,
-      images: image ? [absolute(siteUrl, image)] : undefined,
+      images: [image ? absolute(siteUrl, image) : DEFAULT_OG_IMAGE.url],
     },
   };
 }

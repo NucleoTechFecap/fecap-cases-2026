@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/data/seo";
 import { ContactSection } from "@/components/landing/ContactSection";
 import { MarqueeBar } from "@/components/landing/MarqueeBar";
 import { SiteFooter } from "@/components/landing/SiteFooter";
@@ -10,11 +11,12 @@ import { designVariables, findSection } from "@/lib/landing/derive";
 import { getPublishedLanding } from "@/lib/landing/queries";
 import "./programacao.css";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Programação | FECAP Cases 2026",
   description:
     "Programação completa do FECAP Cases 2026 — workshops, ativações culturais e palestras, dia a dia.",
-};
+  path: "/programacao",
+});
 
 export default async function SchedulePage() {
   const { config } = await getPublishedLanding();

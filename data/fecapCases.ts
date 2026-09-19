@@ -25,8 +25,8 @@ export const NAV_ITEMS: NavItem[] = [
 ];
 
 export const SOCIAL_LINKS = [
-  { label: "Instagram", shortLabel: "IG", href: "/#contato" },
-  { label: "TikTok", shortLabel: "TT", href: "/#contato" },
+  { label: "Instagram", shortLabel: "IG", href: "https://www.instagram.com/fecapcases/" },
+  { label: "TikTok", shortLabel: "TT", href: "https://www.tiktok.com/@fecap_cases" },
   { label: "YouTube", shortLabel: "YT", href: "/#contato" },
 ];
 
