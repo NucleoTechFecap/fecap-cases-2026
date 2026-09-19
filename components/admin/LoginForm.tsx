@@ -11,7 +11,7 @@ export function LoginForm({ next }: { next: string }) {
       <input type="hidden" name="next" value={next} />
       <label>
         E-mail
-        <input className="adm-input" name="email" type="email" autoComplete="email" required />
+        <input className="adm-input" name="email" type="email" autoComplete="email" defaultValue={state?.email} required />
       </label>
       <label>
         Senha
@@ -22,7 +22,7 @@ export function LoginForm({ next }: { next: string }) {
           {state.error}
         </p>
       )}
-      <button type="submit" className="adm-btn adm-btn-primary" disabled={pending}>
+      <button type="submit" className="adm-cta" disabled={pending}>
         {pending ? "Entrando…" : "Entrar"}
       </button>
     </form>

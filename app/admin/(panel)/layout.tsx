@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AdminSidebar } from "@/components/admin/AdminSidebar";
+import { AdminHeader } from "@/components/admin/AdminHeader";
 import { FeedbackProvider } from "@/components/admin/ui/Feedback";
 import { ROLE_LABELS, requirePanelAccess } from "@/lib/landing/auth";
 import "../admin.css";
@@ -14,7 +14,7 @@ export default async function AdminPanelLayout({ children }: { children: React.R
   return (
     <FeedbackProvider>
       <div className="adm-shell">
-        <AdminSidebar name={session.name} roleLabel={ROLE_LABELS[session.role]} />
+        <AdminHeader name={session.name} roleLabel={ROLE_LABELS[session.role]} />
         <div className="adm-main">{children}</div>
       </div>
     </FeedbackProvider>

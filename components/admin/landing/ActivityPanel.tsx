@@ -2,33 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { type AuditEntry, type ContactMessage, listAuditLogs, listContactMessages } from "@/app/admin/actions";
-import { formatDateTime } from "@/components/admin/landing/helpers";
+import { describeAudit, formatDateTime } from "@/components/admin/landing/helpers";
 import { Group } from "@/components/admin/ui/Fields";
-
-const ACTION_LABELS: Record<string, string> = {
-  landing_initialized: "Landing inicializada com o conteúdo do site",
-  landing_updated: "Rascunho salvo",
-  landing_published: "Landing publicada",
-  landing_restored: "Versão restaurada",
-  landing_draft_discarded: "Rascunho descartado",
-  asset_uploaded: "Imagem enviada",
-  asset_deleted: "Imagem excluída",
-  sponsor_created: "Marca adicionada",
-  sponsor_deleted: "Marca excluída",
-  faq_created: "Pergunta adicionada",
-  faq_deleted: "Pergunta excluída",
-  section_reset: "Seção restaurada ao padrão",
-  landing_reset: "Landing restaurada ao padrão",
-};
-
-function describe(entry: AuditEntry): string {
-  const label = ACTION_LABELS[entry.action] ?? entry.action;
-  const version = entry.metadata.version;
-  const detail = entry.metadata.label;
-  if (typeof version === "number") return `${label} (versão ${version})`;
-  if (typeof detail === "string" && detail) return `${label}: ${detail}`;
-  return label;
-}
 
 /** Auditoria e mensagens recebidas pelo formulário de contato. */
 export function ActivityPanel({ refreshKey }: { refreshKey: number }) {
@@ -71,7 +46,7 @@ export function ActivityPanel({ refreshKey }: { refreshKey: number }) {
           <ul className="adm-log">
             {logs.map((entry) => (
               <li key={entry.id}>
-                <strong>{describe(entry)}</strong>
+                <strong>{describeAudit(entry)}</strong>
                 <span>{formatDateTime(entry.createdAt)}</span>
               </li>
             ))}

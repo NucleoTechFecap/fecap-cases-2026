@@ -6,21 +6,27 @@
 .adm-shell,
 .adm-login,
 .adm-toasts,
-.adm-dialog-backdrop {
-  --adm-bg: #f3f4f8;
+.adm-dialog-backdrop,
+.adm-mobile-menu {
+  /* Mesma paleta da landing (globals.css): papel, azul-tinta, laranja, azul elétrico e verde-limão. */
+  --adm-bg: #faf9f6;
   --adm-surface: #fff;
-  --adm-surface-2: #f8f9fc;
-  --adm-line: #dfe3ec;
-  --adm-ink: #14213d;
-  --adm-muted: #5d6882;
+  --adm-surface-2: #f5f2ea;
+  --adm-line: #e3ded2;
+  --adm-ink: #062f68;
+  --adm-muted: #5b6b85;
   --adm-navy: #073775;
+  --adm-blue: #392bfa;
+  --adm-lime: #c8ff00;
   --adm-primary: #ff4b23;
   --adm-primary-ink: #fff;
   --adm-danger: #c62a1a;
   --adm-ok: #157a4a;
-  --adm-warn-bg: #fff4d6;
+  --adm-warn-bg: #fff1c9;
   --adm-warn-ink: #7a5200;
   --adm-radius: 10px;
+  --adm-display: var(--font-wide), Arial, sans-serif;
+  --adm-header-bg: linear-gradient(100deg, #bc4202 0%, #a91b08 42%, #6e090b 100%);
   font-family: var(--font-inter), system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
   font-size: 14px;
   line-height: 1.45;
@@ -30,7 +36,7 @@
 /* ---------- Estrutura ---------- */
 .adm-shell {
   display: grid;
-  grid-template-columns: 232px minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
   height: 100dvh;
   background: var(--adm-bg);
   /* clip (e não hidden): o scrollIntoView do preview não pode rolar o painel. */
@@ -45,82 +51,293 @@
   overflow: clip;
 }
 
-.adm-sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  padding: 22px 16px;
-  background: var(--adm-navy);
+/* ---------- Cabeçalho: a "pílula" da landing ---------- */
+.adm-header {
+  position: relative;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: clamp(16px, 2.6vw, 44px);
+  width: min(1584px, 100%);
+  min-height: 66px;
+  margin-inline: auto;
+  padding: 0 clamp(16px, 2.4vw, 38px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-top: 0;
+  border-radius: 0 0 30px 30px;
+  background: var(--adm-header-bg);
+  box-shadow: 0 5px 20px rgba(60, 0, 0, 0.16);
   color: #fff;
-  overflow-y: auto;
 }
 
-.adm-sidebar-brand {
-  font-size: 17px;
-  font-weight: 900;
-  letter-spacing: -0.02em;
+.adm-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.adm-sidebar-brand span,
-.adm-login-card h1 span {
-  color: #c8ff00;
+.adm-brand-logo {
+  display: block;
+  width: 86px;
+  aspect-ratio: 119 / 59;
+  background: var(--adm-lime);
+  -webkit-mask: url("/logos/logo_direcoes.svg") center / contain no-repeat;
+  mask: url("/logos/logo_direcoes.svg") center / contain no-repeat;
+  transition: background 0.2s;
 }
 
-.adm-sidebar nav {
-  flex: 1;
+.adm-brand:hover .adm-brand-logo {
+  background: #fff;
 }
 
-.adm-sidebar nav p {
-  margin: 0 0 8px;
-  padding: 0 10px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
+.adm-brand-tag {
+  padding: 3px 9px 2px;
+  border: 1.5px solid var(--adm-lime);
+  border-radius: 999px;
+  color: var(--adm-lime);
+  font-family: var(--adm-display);
+  font-stretch: 125%;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.55);
 }
 
-.adm-sidebar nav a {
+.adm-header nav {
+  display: flex;
+  justify-content: center;
+  gap: clamp(16px, 2.1vw, 34px);
+  font-size: clamp(15px, 1.2vw, 18px);
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+}
+
+.adm-header nav a {
+  position: relative;
+  padding: 6px 0;
+  opacity: 0.92;
+  transition: color 0.2s;
+}
+
+.adm-header nav a:hover {
+  color: var(--adm-lime);
+}
+
+.adm-header nav a[aria-current="page"] {
+  color: var(--adm-lime);
+  font-weight: 800;
+  opacity: 1;
+}
+
+.adm-header nav a[aria-current="page"]::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -2px;
+  left: 0;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--adm-lime);
+}
+
+.adm-header-user {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px;
-  border-radius: 8px;
-  font-weight: 600;
-  white-space: nowrap;
-  color: rgba(255, 255, 255, 0.85);
-}
-
-.adm-sidebar nav a:hover {
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.adm-sidebar nav a[aria-current="page"] {
-  background: rgba(255, 255, 255, 0.14);
-  color: #fff;
-}
-
-.adm-sidebar-user {
-  display: grid;
-  gap: 2px;
-  padding-top: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.16);
   min-width: 0;
 }
 
-.adm-sidebar-user strong {
+.adm-header-user p {
+  display: grid;
+  min-width: 0;
+  max-width: 180px;
+  margin: 0 4px 0 0;
+  text-align: right;
+  line-height: 1.2;
+}
+
+.adm-header-user p strong,
+.adm-header-user p span {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.adm-sidebar-user span {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.6);
+.adm-header-user p span {
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.7);
 }
 
-.adm-sidebar-user form {
-  margin-top: 10px;
+.adm-header-round,
+.adm-header-signout {
+  display: grid;
+  place-items: center;
+  height: 40px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--adm-lime);
+  color: var(--adm-navy);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.adm-header-round {
+  width: 40px;
+}
+
+.adm-header-signout {
+  padding: 0 16px;
+  border: 1.5px solid var(--adm-lime);
+  background: transparent;
+  color: var(--adm-lime);
+}
+
+.adm-header-round:hover {
+  transform: scale(1.08);
+  background: #fff;
+}
+
+.adm-header-signout:hover {
+  background: var(--adm-lime);
+  color: var(--adm-navy);
+}
+
+.adm-menu-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  cursor: pointer;
+}
+
+.adm-menu-toggle span {
+  display: block;
+  height: 2.5px;
+  border-radius: 2px;
+  background: #fff;
+}
+
+.adm-menu-toggle span:nth-child(2) {
+  width: 70%;
+  margin-left: auto;
+}
+
+.adm-mobile-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  padding: 88px 28px 28px;
+  overflow-y: auto;
+  color: #fff;
+  background: linear-gradient(160deg, #ff7d0a 0%, #e9480f 40%, #a91b08 75%, #6e090b 100%);
+  animation: adm-menu-in 0.25s ease-out;
+}
+
+.adm-mobile-menu[hidden] {
+  display: none;
+}
+
+@keyframes adm-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}
+
+.adm-mobile-menu-close {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+  cursor: pointer;
+}
+
+.adm-mobile-menu-close span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 2.5px;
+  border-radius: 2px;
+  background: #fff;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.adm-mobile-menu-close span:last-child {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.adm-mobile-menu nav {
+  display: grid;
+  gap: 2px;
+  margin: auto 0;
+}
+
+.adm-mobile-menu nav a {
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  font-size: clamp(30px, 8.6vw, 50px);
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: -0.05em;
+}
+
+.adm-mobile-menu nav a[aria-current="page"],
+.adm-mobile-menu nav a:hover {
+  color: var(--adm-lime);
+}
+
+.adm-mobile-menu-footer {
+  display: grid;
+  gap: 14px;
+  margin-top: 28px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.adm-mobile-menu-footer p {
+  margin: 0;
+}
+
+.adm-mobile-menu-footer div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.adm-mobile-menu-footer a,
+.adm-mobile-menu-footer button {
+  display: block;
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--adm-lime);
+  color: var(--adm-navy);
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.adm-header a:focus-visible,
+.adm-header button:focus-visible,
+.adm-mobile-menu a:focus-visible,
+.adm-mobile-menu button:focus-visible {
+  outline: 3px solid var(--adm-lime);
+  outline-offset: 3px;
 }
 
 /* ---------- Botões ---------- */
@@ -132,11 +349,11 @@
   min-height: 38px;
   padding: 8px 14px;
   border: 1px solid var(--adm-line);
-  border-radius: 8px;
+  border-radius: 6px;
   background: var(--adm-surface);
   color: var(--adm-ink);
   font: inherit;
-  font-weight: 600;
+  font-weight: 700;
   white-space: nowrap;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s, opacity 0.15s;
@@ -144,7 +361,7 @@
 
 .adm-btn:hover:not(:disabled) {
   background: var(--adm-surface-2);
-  border-color: #c4cbdb;
+  border-color: #cfc8b8;
 }
 
 .adm-btn:disabled {
@@ -159,7 +376,7 @@
 .adm-mobile-switch button:focus-visible,
 .adm-sortable-arrows button:focus-visible,
 .adm-item > summary:focus-visible {
-  outline: 2px solid #392bfa;
+  outline: 2px solid var(--adm-blue);
   outline-offset: 2px;
 }
 
@@ -202,15 +419,62 @@
   color: var(--adm-navy);
 }
 
-.adm-sidebar .adm-btn {
-  background: transparent;
-  border-color: rgba(255, 255, 255, 0.3);
+/* Botões "de landing": chamadas principais do Início e do login. */
+.adm-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 10px 22px;
+  border: 2px solid transparent;
+  border-radius: 5px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 900;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s, filter 0.2s, background 0.2s, color 0.2s;
+}
+
+.adm-cta:hover:not(:disabled) {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+}
+
+.adm-cta:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.adm-cta:focus-visible {
+  outline: 3px solid var(--adm-blue);
+  outline-offset: 3px;
+}
+
+.adm-cta-lime {
+  background: var(--adm-lime);
+  color: #1f2032;
+}
+
+.adm-cta-outline {
+  border-color: var(--adm-lime);
+  background: rgba(66, 0, 0, 0.25);
+  color: var(--adm-lime);
+}
+
+.adm-cta-ghost {
+  border-color: rgba(255, 255, 255, 0.45);
   color: #fff;
 }
 
-.adm-sidebar .adm-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.5);
+.adm-eyebrow {
+  margin: 0;
+  font-family: var(--adm-display);
+  font-stretch: 125%;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
 }
 
 /* ---------- Topbar ---------- */
@@ -238,8 +502,14 @@
 
 .adm-topbar-title h1 {
   margin: 0;
-  font-size: 20px;
-  letter-spacing: -0.02em;
+  color: var(--adm-blue);
+  font-family: var(--adm-display);
+  font-stretch: 125%;
+  font-size: clamp(19px, 1.7vw, 24px);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
 }
 
 .adm-topbar-title p {
@@ -392,7 +662,9 @@
   flex: 1;
   min-width: 0;
   margin: 0;
+  color: var(--adm-blue);
   font-size: 17px;
+  letter-spacing: -0.02em;
   overflow-wrap: anywhere;
 }
 
@@ -414,9 +686,13 @@
 
 .adm-group > legend {
   padding: 0 6px;
-  font-weight: 700;
-  font-size: 13px;
-  color: var(--adm-navy);
+  color: var(--adm-primary);
+  font-family: var(--adm-display);
+  font-stretch: 125%;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .adm-group-description {
@@ -461,7 +737,7 @@
   min-width: 0;
   min-height: 38px;
   padding: 8px 10px;
-  border: 1px solid #c9cfdd;
+  border: 1px solid #d3cdbf;
   border-radius: 8px;
   background: #fff;
   color: var(--adm-ink);
@@ -474,7 +750,7 @@ textarea.adm-input {
 }
 
 .adm-input:focus {
-  border-color: #392bfa;
+  border-color: var(--adm-blue);
 }
 
 .adm-range {
@@ -512,7 +788,7 @@ textarea.adm-input {
   width: 42px;
   height: 38px;
   padding: 2px;
-  border: 1px solid #c9cfdd;
+  border: 1px solid #d3cdbf;
   border-radius: 8px;
   background: #fff;
   cursor: pointer;
@@ -563,7 +839,7 @@ textarea.adm-input {
   width: 38px;
   height: 22px;
   border-radius: 999px;
-  background: #c3c9d8;
+  background: #cbc5b6;
   transition: background 0.15s;
 }
 
@@ -583,7 +859,12 @@ textarea.adm-input {
 
 .adm-toggle input:checked + .adm-toggle-track,
 .adm-switch input:checked + span {
-  background: var(--adm-ok);
+  background: var(--adm-blue);
+}
+
+.adm-toggle input:checked + .adm-toggle-track::after,
+.adm-switch input:checked + span::after {
+  background: var(--adm-lime);
 }
 
 .adm-toggle input:checked + .adm-toggle-track::after,
@@ -593,7 +874,7 @@ textarea.adm-input {
 
 .adm-toggle input:focus-visible + .adm-toggle-track,
 .adm-switch input:focus-visible + span {
-  outline: 2px solid #392bfa;
+  outline: 2px solid var(--adm-blue);
   outline-offset: 2px;
 }
 
@@ -637,7 +918,7 @@ textarea.adm-input {
 }
 
 .adm-sortable-item[data-over="true"] {
-  border-color: #392bfa;
+  border-color: var(--adm-blue);
   box-shadow: 0 0 0 2px rgba(57, 43, 250, 0.2);
 }
 
@@ -809,7 +1090,7 @@ textarea.adm-input {
   display: grid;
   place-items: center;
   overflow: hidden;
-  background: repeating-conic-gradient(#e9ecf3 0% 25%, #fff 0% 50%) 0 0 / 16px 16px;
+  background: repeating-conic-gradient(#ece8dd 0% 25%, #fff 0% 50%) 0 0 / 16px 16px;
   color: var(--adm-muted);
   font-size: 12px;
 }
@@ -880,7 +1161,7 @@ textarea.adm-input {
 .adm-media-card img {
   height: 110px;
   padding: 6px;
-  background: repeating-conic-gradient(#e9ecf3 0% 25%, #fff 0% 50%) 0 0 / 16px 16px;
+  background: repeating-conic-gradient(#ece8dd 0% 25%, #fff 0% 50%) 0 0 / 16px 16px;
 }
 
 .adm-media-info {
@@ -937,7 +1218,7 @@ textarea.adm-input {
 }
 
 .adm-versions li[data-viewing="true"] {
-  border-color: #392bfa;
+  border-color: var(--adm-blue);
   box-shadow: 0 0 0 2px rgba(57, 43, 250, 0.18);
 }
 
@@ -1026,7 +1307,7 @@ textarea.adm-input {
   min-height: 0;
   display: flex;
   overflow: clip;
-  background: #e6e9f1;
+  background: #ece8df;
 }
 
 .adm-preview {
@@ -1058,7 +1339,7 @@ textarea.adm-input {
 .adm-mobile-switch {
   padding: 3px;
   border-radius: 9px;
-  background: #e9ecf3;
+  background: #ece8dd;
   gap: 2px;
 }
 
@@ -1110,7 +1391,7 @@ textarea.adm-input {
   display: grid;
   place-items: center;
   color: var(--adm-muted);
-  background: #e6e9f1;
+  background: #ece8df;
 }
 
 /* ---------- Toasts e diálogos ---------- */
@@ -1128,8 +1409,8 @@ textarea.adm-input {
 .adm-toast {
   padding: 12px 14px;
   border-radius: var(--adm-radius);
-  border-left: 4px solid var(--adm-ok);
-  background: #14213d;
+  border-left: 4px solid var(--adm-lime);
+  background: var(--adm-navy);
   color: #fff;
   font-size: 13.5px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
@@ -1159,7 +1440,7 @@ textarea.adm-input {
   display: grid;
   place-items: center;
   padding: 16px;
-  background: rgba(10, 18, 38, 0.55);
+  background: rgba(4, 25, 58, 0.6);
 }
 
 .adm-dialog {
@@ -1178,7 +1459,9 @@ textarea.adm-input {
 
 .adm-dialog h2 {
   margin: 0 0 8px;
+  color: var(--adm-blue);
   font-size: 18px;
+  letter-spacing: -0.02em;
 }
 
 .adm-dialog p {
@@ -1208,28 +1491,52 @@ textarea.adm-input {
 
 /* ---------- Login / erro ---------- */
 .adm-login {
+  position: relative;
   min-height: 100dvh;
   display: grid;
-  place-items: center;
-  padding: 20px;
-  background: linear-gradient(135deg, #073775, #392bfa);
+  align-content: center;
+  justify-items: center;
+  gap: clamp(20px, 4vh, 40px);
+  padding: 28px 20px;
+  overflow: hidden;
+  color: #fff;
+  background: linear-gradient(105deg, rgba(255, 125, 10, 0.55) 0%, rgba(192, 35, 18, 0.62) 55%, rgba(110, 9, 11, 0.86) 100%),
+    url("/fecap-cases-hero.png") center / cover no-repeat #a91b08;
+}
+
+.adm-login-logo {
+  display: block;
+  width: min(330px, 72vw);
+  height: auto;
 }
 
 .adm-login-card {
-  width: min(400px, 100%);
+  width: min(420px, 100%);
   display: grid;
   gap: 14px;
-  padding: 30px 26px;
-  border-radius: 16px;
-  background: var(--adm-surface);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  padding: 30px 28px;
+  border-radius: 24px;
+  border-right: 5px solid var(--adm-lime);
+  border-bottom: 5px solid var(--adm-lime);
+  background: var(--adm-bg);
+  color: var(--adm-ink);
+  box-shadow: 0 24px 60px rgba(60, 0, 0, 0.4);
+}
+
+.adm-login-card .adm-eyebrow {
+  color: var(--adm-primary);
 }
 
 .adm-login-card h1 {
   margin: 0;
-  font-size: 24px;
-  letter-spacing: -0.02em;
-  color: var(--adm-navy);
+  color: var(--adm-blue);
+  font-family: var(--adm-display);
+  font-stretch: 125%;
+  font-size: clamp(26px, 6vw, 34px);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
 }
 
 .adm-login-card h1 span {
@@ -1243,12 +1550,24 @@ textarea.adm-input {
 
 .adm-login-card > a {
   font-size: 13px;
+  font-weight: 700;
   color: var(--adm-navy);
+}
+
+.adm-login-card > a:hover {
+  color: var(--adm-primary);
 }
 
 .adm-login-card .adm-banner {
   padding: 10px 12px;
   border-radius: 8px;
+}
+
+.adm-login-form .adm-cta {
+  width: 100%;
+  margin-top: 4px;
+  background: var(--adm-blue);
+  color: #fff;
 }
 
 .adm-login-form {
@@ -1275,51 +1594,29 @@ textarea.adm-input {
 }
 
 /* ---------- Tablet / mobile: Editor ↓ Preview em abas ---------- */
+@media (max-width: 1180px) {
+  .adm-header {
+    grid-template-columns: 1fr auto;
+    min-height: 58px;
+    border-radius: 0 0 26px 26px;
+  }
+
+  .adm-header nav,
+  .adm-header-user p,
+  .adm-header-signout {
+    display: none;
+  }
+
+  .adm-menu-toggle {
+    display: flex;
+  }
+
+  .adm-brand-logo {
+    width: 76px;
+  }
+}
+
 @media (max-width: 1023px) {
-  .adm-shell {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto minmax(0, 1fr);
-  }
-
-  .adm-sidebar {
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px 14px;
-    padding: 10px 14px;
-    overflow: visible;
-  }
-
-  .adm-sidebar nav {
-    flex: 1;
-  }
-
-  .adm-sidebar nav p {
-    display: none;
-  }
-
-  .adm-sidebar nav a {
-    display: inline-flex;
-    padding: 6px 10px;
-  }
-
-  .adm-sidebar-user {
-    grid-auto-flow: column;
-    align-items: center;
-    gap: 10px;
-    padding: 0;
-    border: 0;
-  }
-
-  .adm-sidebar-user strong,
-  .adm-sidebar-user span {
-    display: none;
-  }
-
-  .adm-sidebar-user form {
-    margin: 0;
-  }
-
   .adm-topbar {
     padding: 10px 14px;
   }
@@ -1373,7 +1670,8 @@ textarea.adm-input {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .adm-toast {
+  .adm-toast,
+  .adm-mobile-menu {
     animation: none;
   }
 }
