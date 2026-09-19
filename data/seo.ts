@@ -31,13 +31,18 @@ export const DEFAULT_OG_IMAGE = {
   alt: "FECAP Cases 2026 — Direções: caminhos que transformam. FECAP, São Paulo, 19 a 23 de outubro de 2026.",
 } as const;
 
+/** Domínio oficial do evento (o endereço sem "www" redireciona para este). */
+export const PRODUCTION_ORIGIN = "https://www.fecapcases.com.br";
+
 /**
- * Origem usada para montar URLs absolutas (og:image, canonical). Os robôs do WhatsApp/LinkedIn
- * precisam de um endereço PÚBLICO: o VERCEL_URL (endereço do deploy) é protegido por login,
- * por isso o domínio de produção do projeto vem antes dele.
+ * Origem usada para montar URLs absolutas (og:image, canonical, sitemap). Os robôs do WhatsApp/LinkedIn
+ * precisam de um endereço PÚBLICO: o VERCEL_URL (endereço do deploy) é protegido por login e, sem
+ * nenhuma variável, o Next cai em "localhost". Por isso, em produção, vale o domínio oficial mesmo
+ * que NEXT_PUBLIC_SITE_URL não tenha sido configurada no Vercel.
  */
 export const ENV_SITE_ORIGIN = (
-  process.env.NEXT_PUBLIC_SITE_URL ||
+  process.env.NEXT_PUBLIC_SITE_URL?.trim() ||
+  (process.env.VERCEL_ENV === "production" ? PRODUCTION_ORIGIN : "") ||
   (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "") ||
   (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "")
 ).replace(/\/+$/, "");
