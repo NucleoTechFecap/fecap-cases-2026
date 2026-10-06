@@ -1,13 +1,14 @@
 import type { CSSProperties } from "react";
 import { InstagramIcon } from "@animateicons/react/lucide/instagram-icon";
 import { SquarePlayIcon } from "@animateicons/react/lucide/square-play-icon";
+import { HeaderNavFit } from "@/components/landing/HeaderNavFit";
 import { HeaderScrollState } from "@/components/landing/HeaderScrollState";
 import { MobileNav } from "@/components/landing/MobileNav";
 import { CmsButton } from "@/components/landing/cms/CmsButton";
 import { CmsImage } from "@/components/landing/cms/CmsImage";
 import { SOCIAL_LABELS, SocialIcon } from "@/components/landing/cms/SocialIcon";
-import { NAV_ITEMS } from "@/data/fecapCases";
 import { DEFAULT_LANDING_CONFIG } from "@/lib/landing/defaults";
+import { withSitePages } from "@/lib/landing/navigation";
 import type { HeaderConfig, SocialLink } from "@/lib/landing/schema";
 import { linkTargetProps, safeHref } from "@/lib/landing/urls";
 
@@ -44,24 +45,10 @@ export function SiteHeader({
   social = DEFAULT_LANDING_CONFIG.social,
   activeHref = "/",
 }: SiteHeaderProps) {
-  const configuredLinks = header.links.filter(
+  // withSitePages também aqui: o preview do painel usa o rascunho sem passar pelo parse.
+  const links = withSitePages(header.links).filter(
     (link) => link.active && link.label.trim(),
   );
-  const links = NAV_ITEMS.map((fallback, index) => {
-    const configured = configuredLinks.find(
-      (link) => link.url === fallback.href,
-    );
-
-    return (
-      configured ?? {
-        id: `fallback-nav-${index + 1}`,
-        label: fallback.label,
-        url: fallback.href,
-        newTab: false,
-        active: true,
-      }
-    );
-  });
   const activeSocial = social.filter((item) => item.active);
   const headerSocial = header.showSocial
     ? activeSocial.filter((item) => item.showInHeader)
@@ -76,6 +63,7 @@ export function SiteHeader({
       style={headerVariables(header)}
     >
       <HeaderScrollState />
+      <HeaderNavFit />
 
       <a
         className="mini-brand"

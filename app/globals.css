@@ -36,7 +36,8 @@
 }
 .mini-brand{gap:3px;color:var(--lime);font-size:10px;letter-spacing:-.06em}
 .mini-brand-mark{width:111px;height:auto;min-height:42px;padding:0;background:transparent;clip-path:none;color:var(--lime);font-size:23px;font-style:italic;font-weight:900;transform:rotate(17deg)}
-.site-header nav{gap:43px;font-size:26px;font-weight:400;letter-spacing:-.04em}
+/* Tamanho fluido: o menu ganha uma entrada a cada página nova do site. */
+.site-header nav{gap:clamp(14px,1.7vw,40px);font-size:clamp(15px,1.45vw,24px);font-weight:400;letter-spacing:-.04em}
 .site-header nav a{position:relative}
 .site-header nav a[aria-current]{color:var(--lime);font-weight:900}
 .site-header nav a[aria-current]:after{content:"";position:absolute;right:0;bottom:-10px;left:0;height:3px;border-radius:3px;background:var(--lime)}
@@ -46,7 +47,6 @@
 
 @media(max-width:1180px){
   .site-header{padding:0 28px}
-  .site-header nav{gap:24px;font-size:20px}
   .mini-brand-mark{width:92px;font-size:19px}
   .header-actions a{width:39px;height:39px}
 }
@@ -113,12 +113,12 @@ html{scroll-padding-top:72px}
 .footer-bottom{font-size:12px}
 .button:hover{transform:translateY(-2px);filter:brightness(1.05)}
 
-@media(max-width:1180px){
-  .site-header nav{gap:20px;font-size:18px}
-}
 @media(min-width:1025px){
   .site-header{grid-template-columns:auto minmax(0,1fr) auto;column-gap:clamp(20px,3vw,52px)}
   .site-header nav{justify-content:center;white-space:nowrap}
+  /* Páginas demais para a largura (HeaderNavFit): usa o menu ☰ como no celular. */
+  .site-header[data-nav-overflow="true"] nav{display:none}
+  .site-header[data-nav-overflow="true"] .menu-toggle{display:flex}
 }
 @media(max-width:1024px){
   .site-header{grid-template-columns:1fr auto}

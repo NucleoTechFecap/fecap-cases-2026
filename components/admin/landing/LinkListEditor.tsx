@@ -7,9 +7,16 @@ import { TextField, Toggle } from "@/components/admin/ui/Fields";
 import { SortableList } from "@/components/admin/ui/SortableList";
 import type { CmsLink } from "@/lib/landing/schema";
 
-type LinkListEditorProps = { links: CmsLink[]; onChange: (links: CmsLink[]) => void; max: number; addLabel?: string };
+type LinkListEditorProps = {
+  links: CmsLink[];
+  onChange: (links: CmsLink[]) => void;
+  max: number;
+  addLabel?: string;
+  /** Mensagem no lugar do botão de excluir para links fixos (ex.: páginas do site no menu). */
+  lockedHint?: (link: CmsLink) => string | undefined;
+};
 
-export function LinkListEditor({ links, onChange, max, addLabel = "Adicionar link" }: LinkListEditorProps) {
+export function LinkListEditor({ links, onChange, max, addLabel = "Adicionar link", lockedHint }: LinkListEditorProps) {
   const { confirm } = useFeedback();
 
   const update = (id: string, patch: Partial<CmsLink>) => onChange(links.map((link) => (link.id === id ? { ...link, ...patch } : link)));
@@ -40,9 +47,13 @@ export function LinkListEditor({ links, onChange, max, addLabel = "Adicionar lin
             <LinkField label="Destino" value={link.url} onChange={(next) => update(link.id, { url: next })} />
             <Toggle label="Abrir em nova aba" checked={link.newTab} onChange={(next) => update(link.id, { newTab: next })} />
             <Toggle label="Visível no site" checked={link.active} onChange={(next) => update(link.id, { active: next })} />
-            <button type="button" className="adm-btn adm-btn-small adm-btn-danger-text" onClick={() => remove(link)}>
-              Excluir link
-            </button>
+            {lockedHint?.(link) ? (
+              <small className="adm-link-locked">{lockedHint(link)}</small>
+            ) : (
+              <button type="button" className="adm-btn adm-btn-small adm-btn-danger-text" onClick={() => remove(link)}>
+                Excluir link
+              </button>
+            )}
           </details>
         )}
       />

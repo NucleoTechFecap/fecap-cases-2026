@@ -5,11 +5,11 @@ import {
   FOOTER_CREDITS,
   FOOTER_LINKS,
   MARQUEE_ITEMS,
-  NAV_ITEMS,
   SOCIAL_LINKS,
   SPONSOR_GROUPS,
 } from "@/data/fecapCases";
 import { FECAP_CASES_KEYWORDS } from "@/data/seo";
+import { SITE_PAGES } from "@/lib/landing/navigation";
 import { DEFAULT_PAGES } from "@/lib/landing/pages-defaults";
 import type { CmsButton, LandingConfig, SectionStyles, SectionType } from "@/lib/landing/schema";
 
@@ -93,13 +93,7 @@ export const DEFAULT_LANDING_CONFIG: LandingConfig = {
     fixed: true,
     hideOnScroll: false,
     showSocial: true,
-    links: NAV_ITEMS.map((item, index) => ({
-      id: `n${index + 1}`,
-      label: item.label,
-      url: item.href,
-      newTab: false,
-      active: true,
-    })),
+    links: SITE_PAGES,
     cta: button({ enabled: false, label: "Garantir ingresso", url: "/ingressos" }),
   },
   footer: {

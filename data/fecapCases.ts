@@ -14,16 +14,6 @@ export type FaqItem = {
   answer: string;
 };
 
-export const NAV_ITEMS: NavItem[] = [
-  { label: "Início", href: "/" },
-  { label: "Sobre", href: "/sobre" },
-  { label: "Patrocinadores", href: "/patrocinadores" },
-  { label: "Programação", href: "/programacao" },
-  { label: "Blog", href: "/blog" },
-  { label: "Dúvidas", href: "/duvidas" },
-  { label: "Contatos", href: "/contato" },
-];
-
 export const SOCIAL_LINKS = [
   { label: "Instagram", shortLabel: "IG", href: "https://www.instagram.com/fecapcases/" },
   { label: "TikTok", shortLabel: "TT", href: "https://www.tiktok.com/@fecap_cases" },

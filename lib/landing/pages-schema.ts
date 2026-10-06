@@ -189,24 +189,26 @@ export type ScheduleDay = z.infer<typeof scheduleDay>;
 export type GalleryItem = PagesConfig["galeria"]["items"][number];
 export type GalleryCategory = PagesConfig["galeria"]["categories"][number];
 
+// Registro das páginas internas. A ordem daqui é a ordem padrão do menu do site e da lista do painel:
+// uma página nova cadastrada aqui entra sozinha no menu (ver lib/landing/navigation.ts).
 export const PAGE_LABELS: Record<PageKey, string> = {
   sobre: "Sobre",
-  programacao: "Programação",
   patrocinadores: "Patrocinadores",
+  programacao: "Programação",
   galeria: "Galeria",
   ingressos: "Ingressos",
+  blog: "Blog",
   duvidas: "Dúvidas",
   contato: "Contato",
-  blog: "Blog",
 };
 
 export const PAGE_PATHS: Record<PageKey, string> = {
   sobre: "/sobre",
-  programacao: "/programacao",
   patrocinadores: "/patrocinadores",
+  programacao: "/programacao",
   galeria: "/galeria",
   ingressos: "/ingressos",
+  blog: "/blog",
   duvidas: "/duvidas",
   contato: "/contato",
-  blog: "/blog",
 };

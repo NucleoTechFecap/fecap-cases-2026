@@ -7,6 +7,7 @@ import { LinkListEditor } from "@/components/admin/landing/LinkListEditor";
 import { ColorPicker } from "@/components/admin/ui/ColorPicker";
 import { Group, RangeField, SelectField, TextField, Toggle } from "@/components/admin/ui/Fields";
 import { DEFAULT_LANDING_CONFIG } from "@/lib/landing/defaults";
+import { isSitePage } from "@/lib/landing/navigation";
 import type { HeaderConfig } from "@/lib/landing/schema";
 
 const BACKGROUNDS = [
@@ -26,8 +27,13 @@ export function HeaderEditor({ value, onChange }: { value: HeaderConfig; onChang
         <RangeField label="Largura do logo" unit="px" min={60} max={220} value={value.logoWidth} onChange={(next) => set("logoWidth", next)} hint="A altura acompanha a proporção da imagem." />
       </Group>
 
-      <Group title="Links do menu" description="Arraste para reordenar. O mesmo menu é usado no celular.">
-        <LinkListEditor links={value.links} max={10} onChange={(next) => set("links", next)} />
+      <Group title="Links do menu" description="Arraste para reordenar. O mesmo menu é usado no celular. Páginas novas do site entram aqui sozinhas.">
+        <LinkListEditor
+          links={value.links}
+          max={20}
+          onChange={(next) => set("links", next)}
+          lockedHint={(link) => (isSitePage(link.url) ? "Página do site: para tirá-la do menu, desligue “Visível no site”." : undefined)}
+        />
       </Group>
 
       <Group title="Aparência">

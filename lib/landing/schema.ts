@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { withSitePages } from "@/lib/landing/navigation";
 import { pagesSchema } from "@/lib/landing/pages-schema";
 import { hexColor, id, imageUrl, linkUrl, optionalColor, text } from "@/lib/landing/primitives";
 
@@ -180,7 +181,8 @@ const headerSchema = z.object({
   fixed: z.boolean(),
   hideOnScroll: z.boolean(),
   showSocial: z.boolean(),
-  links: z.array(linkSchema).max(10),
+  // Toda página cadastrada no site entra no menu, mesmo em configurações salvas antes dela existir.
+  links: z.array(linkSchema).max(20).transform(withSitePages),
   cta: buttonSchema,
 });
 
