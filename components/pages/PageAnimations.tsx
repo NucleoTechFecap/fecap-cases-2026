@@ -37,9 +37,7 @@ export function PageAnimations() {
     mm.add(FULL_MOTION, () => {
       gsap.set(INTRO_TARGETS, { autoAlpha: 1 });
 
-      animateHeaderIntro()
-        .from(".page-hero-content > *", { y: 40, autoAlpha: 0, duration: 0.8, stagger: 0.12 }, 0.15)
-        .from(".page-hero-shape", { scale: 0.4, autoAlpha: 0, duration: 1.4, ease: "expo.out", stagger: 0.15 }, 0.1);
+      animateHeaderIntro().from(".page-hero-content > *", { y: 40, autoAlpha: 0, duration: 0.8, stagger: 0.12 }, 0.15);
 
       gsap.utils.toArray<HTMLElement>("[data-parallax]").forEach((element) => {
         gsap.to(element, {

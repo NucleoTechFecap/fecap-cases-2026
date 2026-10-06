@@ -5,12 +5,11 @@ import { patcher } from "@/components/admin/landing/helpers";
 import { ImageUploader } from "@/components/admin/landing/ImageUploader";
 import { LinkListEditor } from "@/components/admin/landing/LinkListEditor";
 import { ColorPicker } from "@/components/admin/ui/ColorPicker";
-import { Group, RangeField, Row, SelectField, TextField, Toggle } from "@/components/admin/ui/Fields";
+import { Group, RangeField, SelectField, TextField, Toggle } from "@/components/admin/ui/Fields";
 import { DEFAULT_LANDING_CONFIG } from "@/lib/landing/defaults";
 import type { HeaderConfig } from "@/lib/landing/schema";
 
 const BACKGROUNDS = [
-  { value: "gradient", label: "Degradê" },
   { value: "solid", label: "Cor sólida" },
   { value: "transparent", label: "Transparente" },
 ] as const;
@@ -34,12 +33,7 @@ export function HeaderEditor({ value, onChange }: { value: HeaderConfig; onChang
       <Group title="Aparência">
         <SelectField label="Fundo" value={value.background} options={BACKGROUNDS} onChange={(next) => set("background", next)} />
         {value.background !== "transparent" && (
-          <Row>
-            <ColorPicker label={value.background === "gradient" ? "Cor inicial" : "Cor"} value={value.backgroundColor} defaultValue={defaults.backgroundColor} onChange={(next) => set("backgroundColor", next)} />
-            {value.background === "gradient" && (
-              <ColorPicker label="Cor final" value={value.backgroundColorEnd} defaultValue={defaults.backgroundColorEnd} onChange={(next) => set("backgroundColorEnd", next)} />
-            )}
-          </Row>
+          <ColorPicker label="Cor" value={value.backgroundColor} defaultValue={defaults.backgroundColor} onChange={(next) => set("backgroundColor", next)} />
         )}
         <ColorPicker label="Cor ao rolar a página" optional value={value.scrolledColor} onChange={(next) => set("scrolledColor", next)} hint="Útil com o header transparente." />
         <ColorPicker label="Cor dos textos" optional value={value.textColor} onChange={(next) => set("textColor", next)} />

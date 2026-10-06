@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Archivo, Inter, Poppins, Space_Grotesk } from "next/font/google";
+import { Archivo, Inter, Poppins, Space_Grotesk, Syne } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { PageTransition } from "@/components/PageTransition";
 import { DEFAULT_OG_IMAGE, ENV_SITE_ORIGIN, FECAP_CASES_KEYWORDS } from "@/data/seo";
@@ -7,7 +7,15 @@ import "./globals.css";
 import "./pages.css";
 import "./cms.css";
 
-// Variável com eixo de largura: usada expandida (font-stretch:125%) nos títulos display.
+// Fonte principal do site (textos e títulos). Vai só até 700: o corte 800 da Syne é extra-largo
+// e quebraria os títulos; assim os pesos 800/900 pedidos no CSS caem no 700.
+const syne = Syne({
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-syne",
+  display: "swap",
+});
+
 // Whitelist de fontes do CMS: só são baixadas pelo navegador quando o tema as utiliza.
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap", preload: false });
 const poppins = Poppins({
@@ -19,7 +27,7 @@ const poppins = Poppins({
 });
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space-grotesk", display: "swap", preload: false });
 
-const archivo = Archivo({ subsets: ["latin"], axes: ["wdth"], variable: "--font-wide", display: "swap" });
+const archivo = Archivo({ subsets: ["latin"], axes: ["wdth"], variable: "--font-wide", display: "swap", preload: false });
 
 // Necessário para URLs absolutas de canonical, Open Graph e Twitter em todas as rotas.
 const siteOrigin = ENV_SITE_ORIGIN || "http://localhost:3000";
@@ -37,7 +45,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="pt-BR" className={`${archivo.variable} ${inter.variable} ${poppins.variable} ${spaceGrotesk.variable}`}>
+    <html lang="pt-BR" className={`${syne.variable} ${archivo.variable} ${inter.variable} ${poppins.variable} ${spaceGrotesk.variable}`}>
       <body>
         <noscript>
           <style>{".site-header,.hero-content>*,.schedule-hero-content>*,.page-hero-content>*{visibility:visible!important}"}</style>

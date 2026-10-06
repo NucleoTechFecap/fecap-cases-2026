@@ -46,8 +46,9 @@ export function phoneHref(phone: string): string {
   return digits ? `tel:${digits}` : "#";
 }
 
+// "system" é a chave salva no banco para a fonte padrão do site, hoje a Syne.
 const FONT_STACKS: Record<DesignConfig["bodyFont"], string> = {
-  system: "Arial,Helvetica,sans-serif",
+  system: "var(--font-syne),Arial,sans-serif",
   archivo: "var(--font-wide),Arial,sans-serif",
   inter: "var(--font-inter),Arial,sans-serif",
   poppins: "var(--font-poppins),Arial,sans-serif",
@@ -55,7 +56,7 @@ const FONT_STACKS: Record<DesignConfig["bodyFont"], string> = {
 };
 
 export const FONT_LABELS: Record<DesignConfig["bodyFont"], string> = {
-  system: "Arial (padrão do site)",
+  system: "Syne (padrão do site)",
   archivo: "Archivo",
   inter: "Inter",
   poppins: "Poppins",

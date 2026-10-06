@@ -172,9 +172,9 @@ const headerSchema = z.object({
   logoUrl: imageUrl,
   logoAlt: text(120),
   logoWidth: z.number().int().min(60).max(220),
-  background: z.enum(["gradient", "solid", "transparent"]),
+  // O degradê saiu do site: configurações antigas salvas com "gradient" viram cor sólida.
+  background: z.preprocess((value) => (value === "gradient" ? "solid" : value), z.enum(["solid", "transparent"])),
   backgroundColor: hexColor,
-  backgroundColorEnd: hexColor,
   scrolledColor: optionalColor,
   textColor: optionalColor,
   fixed: z.boolean(),

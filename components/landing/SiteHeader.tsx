@@ -21,20 +21,16 @@ function headerVariables(header: HeaderConfig): CSSProperties {
   const background =
     header.background === "transparent"
       ? "transparent"
-      : header.background === "solid"
-        ? header.backgroundColor
-        : `linear-gradient(100deg, ${header.backgroundColor} 0%, ${header.backgroundColorEnd} 100%)`;
+      : header.backgroundColor;
 
   const vars: Record<string, string> = {
     "--logo-width": `${header.logoWidth}px`,
   };
 
-  // O gradiente padrão tem três paradas; só sobrescreve quando o admin mudou as cores.
+  // Só sobrescreve a cor do CSS quando o admin mudou o fundo padrão.
   const isDefault =
     header.background === DEFAULT_LANDING_CONFIG.header.background &&
-    header.backgroundColor === DEFAULT_LANDING_CONFIG.header.backgroundColor &&
-    header.backgroundColorEnd ===
-      DEFAULT_LANDING_CONFIG.header.backgroundColorEnd;
+    header.backgroundColor === DEFAULT_LANDING_CONFIG.header.backgroundColor;
   if (!isDefault) vars["--header-bg"] = background;
 
   if (header.scrolledColor) vars["--header-scrolled"] = header.scrolledColor;

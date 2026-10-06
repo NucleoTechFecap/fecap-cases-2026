@@ -562,7 +562,7 @@
   min-height: 420px;
   padding: 22px clamp(14px, 3vw, 32px);
   color: #062f68;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-syne), Arial, Helvetica, sans-serif;
   font-size: 17px;
   outline: none;
 }
@@ -635,7 +635,7 @@
   overflow: hidden;
   border-radius: 28px;
   color: #fff;
-  background: linear-gradient(105deg, #ff7d0a 0%, #f4560f 38%, #c02312 68%, #7d0606 100%);
+  background: var(--adm-primary);
 }
 
 /* Faixa diagonal azul, como na tela de transição do site. */
@@ -663,7 +663,6 @@
 .adm-home-hero h1 {
   margin: 12px 0 10px;
   font-family: var(--adm-display);
-  font-stretch: 125%;
   font-size: clamp(32px, 4.6vw, 60px);
   font-weight: 900;
   line-height: 0.92;
@@ -723,7 +722,6 @@
 .adm-home-landing h2 {
   margin: 0;
   font-family: var(--adm-display);
-  font-stretch: 125%;
   font-size: clamp(24px, 2.6vw, 36px);
   font-weight: 900;
   line-height: 0.95;
@@ -772,7 +770,6 @@
   margin: 0;
   color: var(--adm-blue);
   font-family: var(--adm-display);
-  font-stretch: 125%;
   font-size: 17px;
   font-weight: 900;
   letter-spacing: -0.03em;

@@ -36,9 +36,6 @@ export function PageFrame({ config, activeHref = "", eyebrow, title, lead, heroT
       <SiteHeader header={config.header} social={config.social} activeHref={activeHref} />
 
       <section className="page-hero">
-        <span className="page-hero-shape page-hero-shape-a" aria-hidden="true" />
-        <span className="page-hero-shape page-hero-shape-b" aria-hidden="true" />
-
         <div className="page-hero-content shell">
           {heroTop}
           <p className="eyebrow">{eyebrow}</p>

@@ -34,9 +34,9 @@ export function MobileNav({ items, socialLinks, activeHref }: MobileNavProps) {
         .set(overlayRef.current, { visibility: "visible" })
         .fromTo(
           overlayRef.current,
-          { clipPath: "circle(0% at calc(100% - 44px) 40px)" },
+          { clipPath: "inset(0% 0% 100% 0%)" },
           {
-            clipPath: "circle(150% at calc(100% - 44px) 40px)",
+            clipPath: "inset(0% 0% 0% 0%)",
             duration: 0.7,
             ease: "power3.inOut",
           },
