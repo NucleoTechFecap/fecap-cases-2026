@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import { type ActionResult, audit, fail, guard } from "@/lib/admin/guard";
 import { getAdminSession } from "@/lib/landing/auth";
 import { DEFAULT_LANDING_CONFIG } from "@/lib/landing/defaults";
+import type { DrivePreviews } from "@/lib/landing/drive";
+import { loadDrivePreviews } from "@/lib/landing/drive-preview";
 import { describeIssues, parseLandingConfig } from "@/lib/landing/parse";
 import { type LandingConfig, landingConfigSchema } from "@/lib/landing/schema";
 import { sanitizeSvg } from "@/lib/landing/svg";
@@ -461,4 +463,15 @@ export async function listContactMessages(): Promise<ActionResult<ContactMessage
   if (error) return fail("Não foi possível carregar as mensagens.");
 
   return { ok: true, data: data.map((row) => ({ id: row.id, name: row.name, email: row.email, message: row.message, createdAt: row.created_at })) };
+}
+
+// ---------- Galeria ----------
+/** Prévia dos álbuns do Drive no editor e no preview da Galeria: lida na hora, para refletir o compartilhamento atual. */
+export async function previewDriveAlbums(urls: unknown): Promise<ActionResult<DrivePreviews>> {
+  const ctx = await guard("view");
+  if (typeof ctx === "string") return fail(ctx);
+  if (!Array.isArray(urls)) return fail("Lista de álbuns inválida.");
+
+  const links = urls.filter((url): url is string => typeof url === "string" && url.length <= 500);
+  return { ok: true, data: await loadDrivePreviews(links, { fresh: true }) };
 }

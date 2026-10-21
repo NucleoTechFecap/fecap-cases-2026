@@ -3,8 +3,7 @@ import {
   ABOUT_INTRO,
   ABOUT_PILLARS,
   ABOUT_TEAM,
-  GALLERY_CATEGORIES,
-  GALLERY_ITEMS,
+  GALLERY_ALBUMS,
   type InfoCard,
   NIGHT_FLOW,
   SPONSOR_BENEFITS,
@@ -27,8 +26,6 @@ const slug = (value: string) =>
 const button = (label: string, url: string, newTab = false): PageButton => ({ enabled: true, label, url, newTab });
 const cards = (prefix: string, items: InfoCard[]) => items.map((item, index) => ({ id: `${prefix}${index + 1}`, tag: item.tag ?? "", title: item.title, text: item.text }));
 const lines = (prefix: string, items: readonly string[]) => items.map((item, index) => ({ id: `${prefix}${index + 1}`, text: item }));
-
-const galleryCategories = GALLERY_CATEGORIES.filter((name) => name !== "Todos").map((name) => ({ id: slug(name), name }));
 
 export const DEFAULT_PAGES: PagesConfig = {
   sobre: {
@@ -131,19 +128,20 @@ export const DEFAULT_PAGES: PagesConfig = {
       title: "Momentos que ficam",
       lead: "Palestras, workshops, ativações e bastidores: reviva o que aconteceu no palco e fora dele.",
     },
-    heading: { eyebrow: "FOTOS", title: "O EVENTO EM", titleHighlight: "IMAGENS", highlightOnNewLine: false, text: "As fotos oficiais serão publicadas aqui durante e depois do evento." },
-    allLabel: "Todos",
-    categories: galleryCategories,
-    items: GALLERY_ITEMS.map((item) => ({
-      id: `foto${item.id}`,
-      categoryId: slug(item.category),
-      imageUrl: "",
-      alt: "",
-      caption: item.caption,
-      shape: item.shape,
-      tone: item.tone,
-      active: true,
+    heading: {
+      eyebrow: "FOTOS",
+      title: "O EVENTO EM",
+      titleHighlight: "IMAGENS",
+      highlightOnNewLine: false,
+      text: "Escolha o dia e veja uma prévia de cada álbum. As fotos completas, em alta resolução, ficam no Google Drive.",
+    },
+    days: SCHEDULE_DAYS.map((day) => ({
+      id: day.id,
+      label: day.label,
+      albums: GALLERY_ALBUMS.map((name) => ({ id: `${day.id}-${slug(name)}`, name, url: "" })),
     })),
+    albumButtonLabel: "Ver álbum completo ↗",
+    emptyText: "As fotos deste álbum serão publicadas em breve.",
   },
 
   ingressos: {

@@ -1021,6 +1021,25 @@ textarea.adm-input {
   gap: 6px;
 }
 
+.adm-drive-status {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--adm-muted);
+}
+
+.adm-drive-status[data-tone="ok"] {
+  color: var(--adm-ok);
+}
+
+.adm-drive-status[data-tone="warn"] {
+  justify-self: stretch;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--adm-warn-bg);
+  color: var(--adm-warn-ink);
+}
+
 .adm-item-count {
   flex: none;
   font-size: 12px;

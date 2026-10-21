@@ -1,129 +1,170 @@
 "use client";
 
 import { newId, patcher } from "@/components/admin/landing/helpers";
-import { ImageUploader } from "@/components/admin/landing/ImageUploader";
+import { LinkField } from "@/components/admin/landing/LinkField";
 import { HeadingFields, HeroFields, PageSeoFields } from "@/components/admin/pages/PageFields";
+import { useDrivePreviews } from "@/components/admin/pages/useDrivePreviews";
 import { useFeedback } from "@/components/admin/ui/Feedback";
-import { Group, Row, SelectField, TextField, Toggle } from "@/components/admin/ui/Fields";
+import { Group, TextAreaField, TextField } from "@/components/admin/ui/Fields";
 import { SortableList } from "@/components/admin/ui/SortableList";
-import type { GalleryCategory, GalleryItem, PagesConfig } from "@/lib/landing/pages-schema";
+import { GALLERY_ALBUMS } from "@/data/pages";
+import { type DrivePreviews, albumUrls, parseDriveFolder } from "@/lib/landing/drive";
+import type { GalleryAlbum, GalleryDay, PagesConfig } from "@/lib/landing/pages-schema";
+import { isSafeUrl } from "@/lib/landing/urls";
 
 type Galeria = PagesConfig["galeria"];
 
-const SHAPE_OPTIONS = [
-  { value: "square", label: "Quadrada" },
-  { value: "wide", label: "Larga (2 colunas)" },
-  { value: "tall", label: "Alta (2 linhas)" },
-] as const;
+const ALBUM_HINT = "Link da pasta no Google Drive, compartilhada como “Qualquer pessoa com o link”.";
 
-const TONE_OPTIONS = [
-  { value: "orange", label: "Laranja" },
-  { value: "blue", label: "Azul" },
-  { value: "navy", label: "Azul-marinho" },
-  { value: "lime", label: "Verde-limão" },
-  { value: "red", label: "Vermelho" },
-] as const;
+/** Situação do link: o painel avisa antes de publicar uma pasta privada ou um link que não é de pasta. */
+function AlbumStatus({ url, previews, error }: { url: string; previews: DrivePreviews; error: string }) {
+  if (!url.trim() || !isSafeUrl(url)) return null;
 
-/** Galeria: categorias (filtros do site) e fotos enviadas pela biblioteca de mídia. */
+  const folder = parseDriveFolder(url);
+  if (!folder) return <p className="adm-drive-status">Link aceito, mas a prévia das fotos só aparece com o link de uma pasta do Google Drive.</p>;
+  if (error) return <p className="adm-drive-status adm-error">{error}</p>;
+
+  const preview = previews[folder.id];
+  if (!preview) return <p className="adm-drive-status">Verificando a pasta no Drive…</p>;
+
+  switch (preview.status) {
+    case "ok":
+      return preview.photos.length > 0 ? (
+        <p className="adm-drive-status" data-tone="ok">
+          ✓ Pasta “{preview.title || "sem nome"}” pública — {preview.photos.length} {preview.photos.length === 1 ? "foto" : "fotos"} na prévia.
+        </p>
+      ) : (
+        <p className="adm-drive-status" data-tone="warn">
+          A pasta está pública, mas ainda não tem fotos. A prévia aparece assim que elas forem enviadas.
+        </p>
+      );
+    case "private":
+      return (
+        <p className="adm-drive-status" data-tone="warn">
+          Esta pasta não está pública: os visitantes não vão conseguir abrir. No Drive, vá em Compartilhar › Acesso geral › “Qualquer pessoa com o link”.
+        </p>
+      );
+    case "not-found":
+      return (
+        <p className="adm-drive-status" data-tone="warn">
+          Pasta não encontrada. Confira se o link é de uma pasta (e não de uma foto) e se ela não foi excluída.
+        </p>
+      );
+    case "unavailable":
+      return (
+        <p className="adm-drive-status" data-tone="warn">
+          Não foi possível consultar o Drive agora. O link continua salvo; use “Verificar links de novo” em instantes.
+        </p>
+      );
+  }
+}
+
+/** Galeria: dias (botões do site) e, em cada dia, álbuns que apontam para pastas do Google Drive. */
 export function GaleriaEditor({ value, onChange }: { value: Galeria; onChange: (next: Galeria) => void }) {
   const { confirm } = useFeedback();
   const set = patcher(value, onChange);
-  const updateItem = (id: string, patch: Partial<GalleryItem>) => set("items", value.items.map((item) => (item.id === id ? { ...item, ...patch } : item)));
-  const categoryOptions = value.categories.map((category) => ({ value: category.id, label: category.name || "Sem nome" }));
+  const { previews, error, refresh } = useDrivePreviews(albumUrls(value.days));
+  const updateDay = (id: string, patch: Partial<GalleryDay>) => set("days", value.days.map((day) => (day.id === id ? { ...day, ...patch } : day)));
+  const updateAlbum = (day: GalleryDay, id: string, patch: Partial<GalleryAlbum>) =>
+    updateDay(day.id, { albums: day.albums.map((album) => (album.id === id ? { ...album, ...patch } : album)) });
 
-  async function removeCategory(category: GalleryCategory) {
-    const count = value.items.filter((item) => item.categoryId === category.id).length;
+  async function removeDay(day: GalleryDay) {
     const confirmed = await confirm({
-      title: "Excluir categoria?",
-      description: count > 0 ? `"${category.name}" e as ${count} fotos cadastradas nela serão removidas.` : `"${category.name}" será removida.`,
+      title: "Excluir dia?",
+      description: `"${day.label}" e os ${day.albums.length} álbuns cadastrados nele serão removidos do site. As pastas no Drive não são afetadas.`,
       confirmLabel: "Excluir",
       destructive: true,
     });
-    if (!confirmed) return;
-
-    onChange({ ...value, categories: value.categories.filter((item) => item.id !== category.id), items: value.items.filter((item) => item.categoryId !== category.id) });
+    if (confirmed) set("days", value.days.filter((item) => item.id !== day.id));
   }
 
   return (
     <>
       <HeroFields value={value.hero} onChange={(next) => set("hero", next)} />
 
-      <Group title="Cabeçalho das fotos">
+      <Group title="Cabeçalho dos álbuns">
         <HeadingFields value={value.heading} onChange={(next) => set("heading", next)} />
       </Group>
 
-      <Group title="Categorias" description="Viram os botões de filtro acima das fotos.">
-        <TextField label='Nome do filtro "todas as fotos"' value={value.allLabel} maxLength={30} onChange={(next) => set("allLabel", next)} />
-        <SortableList
-          label="Categorias"
-          items={value.categories}
-          onReorder={(next) => set("categories", next)}
-          renderItem={(category) => (
-            <div className="adm-line-item">
-              <TextField
-                label="Nome"
-                value={category.name}
-                maxLength={30}
-                onChange={(name) => set("categories", value.categories.map((item) => (item.id === category.id ? { ...item, name } : item)))}
-              />
-              <button type="button" className="adm-btn adm-btn-small adm-btn-danger-text" onClick={() => removeCategory(category)}>
-                Excluir
-              </button>
-            </div>
-          )}
-        />
-        <button
-          type="button"
-          className="adm-btn adm-btn-add"
-          disabled={value.categories.length >= 10}
-          onClick={() => set("categories", [...value.categories, { id: newId("cat"), name: "Nova categoria" }])}
-        >
-          + Nova categoria
-        </button>
+      <Group title="Textos dos álbuns">
+        <TextField label="Botão que abre o álbum no Drive" value={value.albumButtonLabel} maxLength={40} onChange={(next) => set("albumButtonLabel", next)} />
+        <TextAreaField label="Aviso de álbum ainda sem link" value={value.emptyText} maxLength={200} rows={2} onChange={(next) => set("emptyText", next)} />
       </Group>
 
-      <Group title="Fotos" description="Sem imagem, o espaço aparece como um bloco colorido com a palavra FOTO. A ordem desta lista é a ordem no site.">
+      <Group
+        title="Dias e álbuns"
+        description="Cada dia vira um botão no site. Em cada álbum, cole o link da pasta do Google Drive: o site mostra algumas fotos dela e o botão leva ao álbum completo. Fotos novas na pasta aparecem sozinhas em até 5 minutos."
+      >
+        <div className="adm-add-row">
+          <button type="button" className="adm-btn adm-btn-small" onClick={refresh}>
+            Verificar links de novo
+          </button>
+        </div>
+
         <SortableList
-          label="Fotos"
-          items={value.items}
-          onReorder={(next) => set("items", next)}
-          renderItem={(item, index) => (
+          label="Dias"
+          items={value.days}
+          onReorder={(next) => set("days", next)}
+          renderItem={(day) => (
             <details className="adm-item">
               <summary>
-                <strong>{String(index + 1).padStart(2, "0")}</strong>
-                <span data-muted={!item.active}>{item.caption || "Foto sem legenda"}</span>
+                <span>{day.label || "Novo dia"}</span>
+                <em className="adm-item-count">
+                  {day.albums.filter((album) => album.url.trim()).length} de {day.albums.length} com link
+                </em>
               </summary>
-              <ImageUploader label="Imagem" folder="gallery" value={item.imageUrl} onChange={(imageUrl) => updateItem(item.id, { imageUrl })} />
-              <TextField label="Legenda" value={item.caption} maxLength={160} onChange={(caption) => updateItem(item.id, { caption })} />
-              <TextField label="Descrição para leitores de tela" value={item.alt} maxLength={160} onChange={(alt) => updateItem(item.id, { alt })} hint="Vazio = usa a legenda." />
-              {categoryOptions.length > 0 && (
-                <SelectField label="Categoria" value={item.categoryId} options={categoryOptions} onChange={(categoryId) => updateItem(item.id, { categoryId })} />
-              )}
-              <Row>
-                <SelectField label="Formato" value={item.shape} options={SHAPE_OPTIONS} onChange={(shape) => updateItem(item.id, { shape })} />
-                <SelectField label="Cor de fundo (sem imagem)" value={item.tone} options={TONE_OPTIONS} onChange={(tone) => updateItem(item.id, { tone })} />
-              </Row>
-              <Toggle label="Visível no site" checked={item.active} onChange={(active) => updateItem(item.id, { active })} />
-              <button type="button" className="adm-btn adm-btn-small adm-btn-danger-text" onClick={() => set("items", value.items.filter((entry) => entry.id !== item.id))}>
-                Excluir foto
-              </button>
+
+              <TextField label="Nome do botão" value={day.label} maxLength={40} onChange={(label) => updateDay(day.id, { label })} />
+
+              <SortableList
+                label={`Álbuns de ${day.label}`}
+                items={day.albums}
+                onReorder={(albums) => updateDay(day.id, { albums })}
+                renderItem={(album) => (
+                  <div className="adm-line-item">
+                    <TextField label="Nome do álbum" value={album.name} maxLength={40} onChange={(name) => updateAlbum(day, album.id, { name })} />
+                    <LinkField label="Link do Google Drive" value={album.url} hint={ALBUM_HINT} onChange={(url) => updateAlbum(day, album.id, { url })} />
+                    <AlbumStatus url={album.url} previews={previews} error={error} />
+                    <button
+                      type="button"
+                      className="adm-btn adm-btn-small adm-btn-danger-text"
+                      onClick={() => updateDay(day.id, { albums: day.albums.filter((item) => item.id !== album.id) })}
+                    >
+                      Excluir álbum
+                    </button>
+                  </div>
+                )}
+              />
+
+              <div className="adm-add-row">
+                <button
+                  type="button"
+                  className="adm-btn adm-btn-small"
+                  disabled={day.albums.length >= 6}
+                  onClick={() => updateDay(day.id, { albums: [...day.albums, { id: newId("album"), name: "Novo álbum", url: "" }] })}
+                >
+                  + Novo álbum
+                </button>
+                <button type="button" className="adm-btn adm-btn-small adm-btn-danger-text" onClick={() => removeDay(day)}>
+                  Excluir dia
+                </button>
+              </div>
             </details>
           )}
         />
         <button
           type="button"
           className="adm-btn adm-btn-add"
-          disabled={value.items.length >= 120 || value.categories.length === 0}
+          disabled={value.days.length >= 10}
           onClick={() =>
-            set("items", [
-              ...value.items,
-              { id: newId("foto"), categoryId: value.categories[0].id, imageUrl: "", alt: "", caption: "", shape: "square", tone: "navy", active: true },
+            set("days", [
+              ...value.days,
+              { id: newId("dia"), label: `Dia ${value.days.length + 1}`, albums: GALLERY_ALBUMS.map((name) => ({ id: newId("album"), name, url: "" })) },
             ])
           }
         >
-          + Nova foto
+          + Novo dia
         </button>
-        {value.categories.length === 0 && <p className="adm-empty">Crie ao menos uma categoria para adicionar fotos.</p>}
       </Group>
 
       <PageSeoFields value={value.seo} onChange={(next) => set("seo", next)} />

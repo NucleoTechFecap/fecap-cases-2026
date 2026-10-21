@@ -13,7 +13,7 @@ const PAGE_HINTS: Record<PageTarget, string> = {
   sobre: "Apresentação, números, pilares, roteiro e quem faz",
   programacao: "Dias, horários, workshops, ativações e palestrantes",
   patrocinadores: "Topo, motivos para apoiar e cotas",
-  galeria: "Categorias e fotos do evento",
+  galeria: "Dias e álbuns do Google Drive",
   ingressos: "Link da Sympla, passo a passo e avisos",
   duvidas: "Topo, cartão de ajuda e busca",
   contato: "Topo e canais oficiais",
