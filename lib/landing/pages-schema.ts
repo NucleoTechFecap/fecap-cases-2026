@@ -23,8 +23,6 @@ const card = z.object({ id, tag: text(24), title: text(80), text: text(400) });
 const line = z.object({ id, text: text(300) });
 
 export const TIER_TONES = ["orange", "blue", "cyan"] as const;
-export const GALLERY_SHAPES = ["square", "wide", "tall"] as const;
-export const GALLERY_TONES = ["orange", "blue", "navy", "lime", "red"] as const;
 
 // ---------- Programação ----------
 const blockBase = { id, time: text(30), title: text(80) };
@@ -93,26 +91,18 @@ const patrocinadoresPage = z.object({
     .max(6),
 });
 
+/** Álbum = link de uma pasta do Google Drive; o site mostra uma prévia e leva ao álbum completo. */
+const galleryAlbum = z.object({ id, name: text(40), url: linkUrl });
+
 const galeriaPage = z.object({
   seo: pageSeo,
   hero: pageHero,
   heading,
-  allLabel: text(30),
-  categories: z.array(z.object({ id, name: text(30) })).max(10),
-  items: z
-    .array(
-      z.object({
-        id,
-        categoryId: id,
-        imageUrl,
-        alt: text(160),
-        caption: text(160),
-        shape: z.enum(GALLERY_SHAPES),
-        tone: z.enum(GALLERY_TONES),
-        active: z.boolean(),
-      }),
-    )
-    .max(120),
+  /** Cada dia vira um botão acima dos álbuns. */
+  days: z.array(z.object({ id, label: text(40), albums: z.array(galleryAlbum).max(6) })).max(10),
+  albumButtonLabel: text(40),
+  /** Mostrado no lugar de um álbum ainda sem link. */
+  emptyText: text(200),
 });
 
 const ingressosPage = z.object({
@@ -186,8 +176,8 @@ export type PageCard = z.infer<typeof card>;
 export type PageLine = z.infer<typeof line>;
 export type ScheduleBlock = z.infer<typeof scheduleBlockSchema>;
 export type ScheduleDay = z.infer<typeof scheduleDay>;
-export type GalleryItem = PagesConfig["galeria"]["items"][number];
-export type GalleryCategory = PagesConfig["galeria"]["categories"][number];
+export type GalleryDay = PagesConfig["galeria"]["days"][number];
+export type GalleryAlbum = GalleryDay["albums"][number];
 
 // Registro das páginas internas. A ordem daqui é a ordem padrão do menu do site e da lista do painel:
 // uma página nova cadastrada aqui entra sozinha no menu (ver lib/landing/navigation.ts).

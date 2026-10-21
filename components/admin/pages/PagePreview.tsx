@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import type { PageTarget } from "@/components/admin/pages/PagesEditor";
+import { useDrivePreviews } from "@/components/admin/pages/useDrivePreviews";
 import { PageFrame } from "@/components/pages/PageFrame";
 import { ContatoView } from "@/components/pages/views/ContatoView";
 import { DuvidasView } from "@/components/pages/views/DuvidasView";
@@ -10,7 +11,14 @@ import { IngressosView } from "@/components/pages/views/IngressosView";
 import { PatrocinadoresView } from "@/components/pages/views/PatrocinadoresView";
 import { ProgramacaoView } from "@/components/pages/views/ProgramacaoView";
 import { SobreView } from "@/components/pages/views/SobreView";
+import { albumUrls } from "@/lib/landing/drive";
 import type { LandingConfig } from "@/lib/landing/schema";
+
+/** No site a prévia dos álbuns vem pronta do servidor; aqui ela é lida a partir dos links do rascunho. */
+function GaleriaPreview({ config }: { config: LandingConfig }) {
+  const { previews } = useDrivePreviews(albumUrls(config.pages.galeria.days));
+  return <GaleriaView config={config} animated={false} previews={previews} />;
+}
 
 /** Preview das páginas internas: os mesmos componentes do site, com o rascunho e sem GSAP. */
 export function PagePreview({ target, config }: { target: PageTarget; config: LandingConfig }) {
@@ -29,7 +37,7 @@ export function PagePreview({ target, config }: { target: PageTarget; config: La
     case "patrocinadores":
       return <PatrocinadoresView config={config} animated={false} />;
     case "galeria":
-      return <GaleriaView config={config} animated={false} />;
+      return <GaleriaPreview config={config} />;
     case "ingressos":
       return <IngressosView config={config} animated={false} />;
     case "duvidas":

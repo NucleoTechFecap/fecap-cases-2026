@@ -81,30 +81,5 @@ export const TICKET_NOTES = [
   "Certificados são disponibilizados aos participantes elegíveis após o evento.",
 ];
 
-export const GALLERY_CATEGORIES = ["Todos", "Palestras", "Workshops", "Ativações", "Bastidores"] as const;
-
-export type GalleryCategory = (typeof GALLERY_CATEGORIES)[number];
-
-export type GalleryItem = {
-  id: number;
-  category: Exclude<GalleryCategory, "Todos">;
-  caption: string;
-  shape: "wide" | "tall" | "square";
-  tone: "orange" | "blue" | "navy" | "lime" | "red";
-};
-
-// Placeholders: troque por fotos reais adicionando `src` e usando next/image no GalleryGrid.
-export const GALLERY_ITEMS: GalleryItem[] = [
-  { id: 1, category: "Palestras", caption: "[Legenda da foto — palestra]", shape: "wide", tone: "orange" },
-  { id: 2, category: "Workshops", caption: "[Legenda da foto — workshop]", shape: "square", tone: "blue" },
-  { id: 3, category: "Bastidores", caption: "[Legenda da foto — bastidores]", shape: "tall", tone: "navy" },
-  { id: 4, category: "Ativações", caption: "[Legenda da foto — ativação]", shape: "square", tone: "lime" },
-  { id: 5, category: "Palestras", caption: "[Legenda da foto — palestra]", shape: "square", tone: "red" },
-  { id: 6, category: "Workshops", caption: "[Legenda da foto — workshop]", shape: "wide", tone: "navy" },
-  { id: 7, category: "Ativações", caption: "[Legenda da foto — ativação]", shape: "tall", tone: "orange" },
-  { id: 8, category: "Bastidores", caption: "[Legenda da foto — bastidores]", shape: "square", tone: "blue" },
-  { id: 9, category: "Palestras", caption: "[Legenda da foto — palestra]", shape: "square", tone: "lime" },
-  { id: 10, category: "Workshops", caption: "[Legenda da foto — workshop]", shape: "square", tone: "red" },
-  { id: 11, category: "Bastidores", caption: "[Legenda da foto — bastidores]", shape: "wide", tone: "orange" },
-  { id: 12, category: "Ativações", caption: "[Legenda da foto — ativação]", shape: "square", tone: "navy" },
-];
+// Álbuns criados em cada dia da Galeria; o link de cada um (pasta do Google Drive) é colado no painel.
+export const GALLERY_ALBUMS = ["Fotos gerais", "Backstage"] as const;
